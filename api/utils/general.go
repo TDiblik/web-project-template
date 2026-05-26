@@ -3,7 +3,6 @@ package utils
 import (
 	"context"
 	"log"
-	"math"
 	"math/rand/v2"
 	"net/url"
 	"os"
@@ -12,17 +11,6 @@ import (
 	"strings"
 	"syscall"
 )
-
-// WARNING: This fucks up the order of the array tho
-func RemoveIndexFromArrayFast[T any](s []T, i int) []T {
-	s[i] = s[len(s)-1]
-	return s[:len(s)-1]
-}
-
-// Bigger bias != bias towards higher numbers (https://gamedev.stackexchange.com/a/116875)
-func GetBiasedRandom(min, max int64, bias float64) int64 {
-	return int64(math.Floor(float64(min) + (float64(max)-float64(min))*math.Pow(float64(rand.Float64()), float64(bias))))
-}
 
 // JoinUrl joins a base URL with additional path segments safely
 func JoinUrl(base string, paths ...string) (string, error) {
@@ -38,7 +26,7 @@ func JoinUrl(base string, paths ...string) (string, error) {
 	return u.String(), nil
 }
 
-// Calls JoinUrl, but panics on errors, use with causion
+// Calls JoinUrl, but panics on errors, use with caution.
 func JoinUrlOrPanic(base string, paths ...string) string {
 	url, err := JoinUrl(base, paths...)
 	if err != nil {

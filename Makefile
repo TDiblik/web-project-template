@@ -138,8 +138,6 @@ update:
 	$(MAKE) install
 	$(MAKE) api-update
 	$(MAKE) fe-update
-	$(MAKE) api-build
-	$(MAKE) fe-build
-	$(MAKE) install
+	$(MAKE) build
 build: api-build fe-build
 clean: api-clean fe-clean gen-types-clean

@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"encoding/base64"
-	"errors"
 	"mime/multipart"
 	"net/url"
 	"os"
@@ -57,15 +55,6 @@ func GetAvatarImageFolder() string {
 func GetAvatarImagePath(fileName string) string {
 	return filepath.Join(GetAvatarImageFolder(), AddImageExtensionIfNeeded(fileName))
 }
-func AvatarImageExists(imageId string) bool {
-	if _, err := os.Stat(GetAvatarImagePath(imageId)); errors.Is(err, os.ErrNotExist) {
-		return false
-	}
-	return true
-}
-func GetAvatarImageRaw(imageId string) (*string, error) {
-	return getImageRaw(GetAvatarImagePath(imageId))
-}
 func GetAvatarImageUrlBase() (string, error) {
 	return url.JoinPath(EnvData.API_PROD_URL, constants.IMAGES_PATH_PREFIX_FULL, "avatar/")
 }
@@ -82,27 +71,4 @@ func GetTempImageFolder() string {
 }
 func GetTempImagePath(fileName string) string {
 	return filepath.Join(GetTempImageFolder(), AddImageExtensionIfNeeded(fileName))
-}
-func TempImageExists(imageId string) bool {
-	if _, err := os.Stat(GetTempImagePath(imageId)); errors.Is(err, os.ErrNotExist) {
-		return false
-	}
-	return true
-}
-func GetTempImageRaw(imageId string) (*string, error) {
-	return getImageRaw(GetTempImagePath(imageId))
-}
-
-func getImageRaw(imagePath string) (*string, error) {
-	if _, err := os.Stat(imagePath); err != nil {
-		return nil, err
-	}
-
-	fileData, err := os.ReadFile(imagePath)
-	if err != nil {
-		return nil, err
-	}
-
-	image_base64 := base64.StdEncoding.EncodeToString(fileData)
-	return &image_base64, nil
 }

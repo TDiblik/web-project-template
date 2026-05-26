@@ -1,7 +1,6 @@
 package database
 
 import (
-	"database/sql"
 	"sync"
 	"time"
 
@@ -35,38 +34,4 @@ func CreateConnection() (*sqlx.DB, error) {
 	})
 
 	return db, dbErr
-}
-
-func ExecuteTransaction(db *sqlx.DB, fn func(*sql.Tx) error) (err error) {
-	utils.Log("starting a transaction")
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-
-	defer func() {
-		if p := recover(); p != nil {
-			if utils.EnvData.Debug {
-				utils.Log("transaction panic, rolling back: ", p)
-			}
-			if rbErr := tx.Rollback(); rbErr != nil {
-				utils.Log("failed to rollback after panic: ", rbErr)
-			}
-			panic(p) // rethrow panic after rollback
-		} else if err != nil {
-			utils.Log("transaction failed, rolling back: ", err)
-			if rbErr := tx.Rollback(); rbErr != nil {
-				utils.Log("failed to rollback after error: ", rbErr)
-			}
-		} else {
-			utils.Log("committing transaction")
-			if cmErr := tx.Commit(); cmErr != nil {
-				utils.Log("failed to commit transaction: ", cmErr)
-				err = cmErr
-			}
-		}
-	}()
-
-	err = fn(tx)
-	return err
 }

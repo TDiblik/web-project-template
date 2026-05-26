@@ -35,10 +35,6 @@ RUN bun run build
 # ============================
 FROM golang:alpine AS api-build
 
-RUN apk update && \
-    apk upgrade && \
-    rm -rf /var/cache/apk/*
-
 WORKDIR /build/api
 
 COPY api/go.mod api/go.sum ./
@@ -58,10 +54,7 @@ FROM alpine:latest
 WORKDIR /app
 
 # Install runtime dependencies only
-RUN apk update && \
-    apk upgrade && \
-    apk add dumb-init && \
-    rm -rf /var/cache/apk/*
+RUN apk add dumb-init
 
 # Create non-root user
 RUN addgroup -S app_perms && adduser -S -G app_perms app_perms

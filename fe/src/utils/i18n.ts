@@ -17,5 +17,3 @@ i18n
       lookupLocalStorage: constants.LOCAL_STORAGE_LOCALIZATION_KEY,
     },
   });
-
-export default i18n;

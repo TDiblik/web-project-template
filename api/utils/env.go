@@ -51,16 +51,6 @@ type IEnvData struct {
 	IMAGES_PATH        string
 	IMAGES_PATH_AVATAR string
 	IMAGES_PATH_TEMP   string
-
-	// MAIL_CLIENT_AUTOMATION_HOST     string
-	// MAIL_CLIENT_AUTOMATION_PORT     int
-	// MAIL_CLIENT_AUTOMATION_USERNAME string
-	// MAIL_CLIENT_AUTOMATION_PASSWORD string
-
-	// MAIL_CLIENT_SALES_HOST     string
-	// MAIL_CLIENT_SALES_PORT     int
-	// MAIL_CLIENT_SALES_USERNAME string
-	// MAIL_CLIENT_SALES_PASSWORD string
 }
 
 var EnvData IEnvData
@@ -170,24 +160,6 @@ func SetupENV(env_files ...string) {
 		log.Fatal("Error ensuring images path (\"", EnvData.IMAGES_PATH_TEMP, "\"): ", err)
 	}
 
-	// EnvData.MAIL_CLIENT_AUTOMATION_HOST = getEnvKeyOrPanic("MAIL_CLIENT_AUTOMATION_HOST")
-	// if port, err := strconv.ParseInt(getEnvKeyOrPanic("MAIL_CLIENT_AUTOMATION_PORT"), 10, 64); err != nil {
-	// 	log.Fatalf("Invalid MAIL_CLIENT_AUTOMATION_PORT: %v", err)
-	// } else {
-	// 	EnvData.MAIL_CLIENT_AUTOMATION_PORT = int(port)
-	// }
-	// EnvData.MAIL_CLIENT_AUTOMATION_USERNAME = getEnvKeyOrPanic("MAIL_CLIENT_AUTOMATION_USERNAME")
-	// EnvData.MAIL_CLIENT_AUTOMATION_PASSWORD = getEnvKeyOrPanic("MAIL_CLIENT_AUTOMATION_PASSWORD")
-
-	// EnvData.MAIL_CLIENT_SALES_HOST = getEnvKeyOrPanic("MAIL_CLIENT_SALES_HOST")
-	// if port, err := strconv.ParseInt(getEnvKeyOrPanic("MAIL_CLIENT_SALES_PORT"), 10, 64); err != nil {
-	// 	log.Fatalf("Invalid MAIL_CLIENT_SALES_PORT: %v", err)
-	// } else {
-	// 	EnvData.MAIL_CLIENT_SALES_PORT = int(port)
-	// }
-	// EnvData.MAIL_CLIENT_SALES_USERNAME = getEnvKeyOrPanic("MAIL_CLIENT_SALES_USERNAME")
-	// EnvData.MAIL_CLIENT_SALES_PASSWORD = getEnvKeyOrPanic("MAIL_CLIENT_SALES_PASSWORD")
-
 	log.Println("Setting up env variables: done")
 }
 
@@ -201,16 +173,10 @@ func getEnvKeyOrPanic(key string) string {
 
 func Log(v ...any) {
 	log.Println(v...)
-	// if EnvData.Debug {
-	// 	log.Println("DEBUG: ", v)
-	// }
 }
 
 func LogErr(e error) {
 	log.Println("ERROR: ", e)
-	// if EnvData.Debug {
-	// 	log.Println("DEBUG ERROR: ", e)
-	// }
 }
 
 func LogIfMaster(v ...any) {

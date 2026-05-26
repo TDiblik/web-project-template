@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"
-	"github.com/google/uuid"
 )
 
 type XValidator struct {
@@ -44,13 +43,4 @@ func GetValidQuery(query any, c fiber.Ctx) error {
 		return err
 	}
 	return nil
-}
-
-func GetValidUUIDFromParams(c fiber.Ctx, param_name string) (*string, error) {
-	value := c.Params(param_name)
-	if _, err := uuid.Parse(value); err != nil {
-		return nil, err
-	}
-
-	return &value, nil
 }

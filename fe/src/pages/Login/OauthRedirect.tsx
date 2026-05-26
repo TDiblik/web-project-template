@@ -14,7 +14,6 @@ const delayed = (delay: number) =>
     transition: {delay},
   }) as HTMLMotionProps<"p"> | HTMLMotionProps<"h1">;
 
-// todo: when logging in, this re-renders
 const OAuthRedirect = () => {
   const {t} = useTranslation();
   const navigate = useNavigate();
@@ -29,9 +28,8 @@ const OAuthRedirect = () => {
   const {setToken} = useAuthTokenStore();
 
   useEffect(() => {
-    if (!oAuthCode || !oAuthState) {
-      return;
-    }
+    if (!oAuthCode || !oAuthState) return;
+
     oAuthController
       .apiV1PublicAuthOauthReturnGet({
         state: oAuthState,
@@ -42,10 +40,7 @@ const OAuthRedirect = () => {
         refetchUser();
         navigate(RedirectBackToAfterOauthToRouteMap[s.redirectBackToAfterOauth]);
       })
-      .catch((error) => {
-        console.log(error); // todo: add better error logging
-        setShouldFail(true);
-      });
+      .catch(() => setShouldFail(true));
   }, [oAuthCode, oAuthState]);
 
   return (

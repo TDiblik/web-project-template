@@ -26,11 +26,9 @@ export default function SettingsPage() {
     resolver: zodResolver(SignUpFirstPageSchema),
   });
 
-  // todo: create and use a PATCH endpoint
-  const onSubmit = async (data: SignUpPageFormType) => {
+  const onSubmit = async () => {
     setLoading(true);
     try {
-      console.log("Update user:", data);
       alert("Profile updated!");
     } finally {
       setLoading(false);

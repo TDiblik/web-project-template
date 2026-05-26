@@ -155,7 +155,7 @@ export default function Login() {
   );
 }
 
-export const NameFields = ({t}: {t: any}) => {
+const NameFields = ({t}: {t: any}) => {
   const [useUsername, setUseUsername] = useState(false);
   const animation = {
     initial: {opacity: 0, scale: 0.95},

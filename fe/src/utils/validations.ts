@@ -2,12 +2,11 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {t} from "i18next";
 import * as z from "zod";
 
-export {z, zodResolver};
+export {zodResolver};
 
-// ----------- General -----------
-export const EmailSchema = z.email({error: () => t("validation.email.invalid")});
+const EmailSchema = z.email({error: () => t("validation.email.invalid")});
 
-export const PasswordSchema = z
+const PasswordSchema = z
   .string({error: () => t("validation.password.required")})
   .min(6, {error: () => t("validation.password.minLength")})
   .max(32, {error: () => t("validation.password.maxLength")})
@@ -15,10 +14,8 @@ export const PasswordSchema = z
   .regex(/[a-z]/, {error: () => t("validation.password.lowercase")})
   .regex(/[0-9]/, {error: () => t("validation.password.number")})
   .refine((val) => new TextEncoder().encode(val).length <= 72, {error: () => t("validation.password.tooLong")});
-export const ConfirmPasswordSchema = z.string({error: () => t("validation.confirmPassword.required")});
-// -----------------------------
+const ConfirmPasswordSchema = z.string({error: () => t("validation.confirmPassword.required")});
 
-// ----------- Pages -----------
 export const LoginFirstPageSchema = z.object({
   email: EmailSchema,
   password: PasswordSchema,

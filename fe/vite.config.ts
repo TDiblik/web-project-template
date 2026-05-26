@@ -19,19 +19,12 @@ export default defineConfig(() => ({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes("shared/fe")) {
-            return "shared-fe";
-          }
+          if (id.includes("shared/fe")) return "shared-fe";
+
           if (id.includes("node_modules")) {
-            if (id.includes("motion")) {
-              return "motion-vendor";
-            }
-            if (id.includes("@tanstack")) {
-              return "tanstack-vendor";
-            }
-            if (id.includes("i18next")) {
-              return "i18n-vendor";
-            }
+            if (id.includes("motion")) return "motion-vendor";
+            if (id.includes("@tanstack")) return "tanstack-vendor";
+            if (id.includes("i18next")) return "i18n-vendor";
             return "vendor";
           }
         },

@@ -23,7 +23,6 @@ func main() {
 
 	utils.SetupENV()
 	utils.SetupValidator()
-	// utils.SetupCronJobs()
 
 	log.Println("Checking database connectivity: start")
 	db, err := database.CreateConnection()
@@ -60,13 +59,6 @@ func main() {
 		log.Println("Running database migrations: done")
 	}
 
-	// 	images_path := filepath.Join(utils.EnvData.IMAGES_PATH, db_name)
-	// 	if err := os.MkdirAll(images_path, utils.FoldrePerms); err != nil {
-	// 		log.Fatal("Error ensuring images path (\"", images_path, "\") for db (\"", db_name, "\"): ", err)
-	// 	}
-	// }
-	// log.Println("Checking every database connectivity: done")
-
 	log.Println("Setting up the app: start")
 	app := fiber.New(fiber.Config{
 		AppName:       "Template APP",
@@ -96,7 +88,6 @@ func main() {
 
 	cron_ctx := utils.WithSignalCancel("cron jobs")
 	utils.SetupCronJobs(cron_ctx)
-
 	log.Println("Initialization completed")
 	log.Fatal(app.Listen(":"+utils.EnvData.API_PORT, fiber.ListenConfig{
 		EnablePrefork:     !utils.EnvData.Debug,

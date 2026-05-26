@@ -75,7 +75,6 @@ Common variables:
 - `DB_MIGRATIONS_PATH` — path to migrations
 - `API_PROD_URL` / `FE_PROD_URL` — production URLs
 - OAuth & JWT secrets
-- Mail client credentials (optional)
 
 For local production testing:
 
@@ -131,7 +130,7 @@ make fe          # Start dev server
 make fe-update   # Update packages + lint
 ```
 
-- Default dev port: `5173` (Vite)
+- Default dev port: `35230` (Vite)
 
 ---
 
