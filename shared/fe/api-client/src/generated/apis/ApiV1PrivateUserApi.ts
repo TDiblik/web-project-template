@@ -12,21 +12,22 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  GithubComTDiblikProjectTemplateApiHandlersGetUserMeHandlerResponse,
-  GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequest,
-  GithubComTDiblikProjectTemplateApiUtilsErrorResponseType,
-} from '../models/index';
 import {
+    type GithubComTDiblikProjectTemplateApiHandlersGetUserMeHandlerResponse,
     GithubComTDiblikProjectTemplateApiHandlersGetUserMeHandlerResponseFromJSON,
     GithubComTDiblikProjectTemplateApiHandlersGetUserMeHandlerResponseToJSON,
+} from '../models/GithubComTDiblikProjectTemplateApiHandlersGetUserMeHandlerResponse';
+import {
+    type GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequest,
     GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequestFromJSON,
     GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequestToJSON,
+} from '../models/GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequest';
+import {
+    type GithubComTDiblikProjectTemplateApiUtilsErrorResponseType,
     GithubComTDiblikProjectTemplateApiUtilsErrorResponseTypeFromJSON,
     GithubComTDiblikProjectTemplateApiUtilsErrorResponseTypeToJSON,
-} from '../models/index';
+} from '../models/GithubComTDiblikProjectTemplateApiUtilsErrorResponseType';
 
 export interface ApiV1PrivateUserMeAvatarPostRequest {
     avatar: Blob;
@@ -42,8 +43,9 @@ export interface ApiV1PrivateUserMePatchRequest {
 export class ApiV1PrivateUserApi extends runtime.BaseAPI {
 
     /**
+     * Creates request options for apiV1PrivateUserMeAvatarPost without sending the request
      */
-    async apiV1PrivateUserMeAvatarPostRaw(requestParameters: ApiV1PrivateUserMeAvatarPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+    async apiV1PrivateUserMeAvatarPostRequestOpts(requestParameters: ApiV1PrivateUserMeAvatarPostRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['avatar'] == null) {
             throw new runtime.RequiredError(
                 'avatar',
@@ -82,13 +84,20 @@ export class ApiV1PrivateUserApi extends runtime.BaseAPI {
 
         let urlPath = `/api/v1/private/user/me/avatar`;
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: formParams,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     */
+    async apiV1PrivateUserMeAvatarPostRaw(requestParameters: ApiV1PrivateUserMeAvatarPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+        const requestOptions = await this.apiV1PrivateUserMeAvatarPostRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse<any>(response);
     }
@@ -101,8 +110,9 @@ export class ApiV1PrivateUserApi extends runtime.BaseAPI {
     }
 
     /**
+     * Creates request options for apiV1PrivateUserMeGet without sending the request
      */
-    async apiV1PrivateUserMeGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GithubComTDiblikProjectTemplateApiHandlersGetUserMeHandlerResponse>> {
+    async apiV1PrivateUserMeGetRequestOpts(): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -114,12 +124,19 @@ export class ApiV1PrivateUserApi extends runtime.BaseAPI {
 
         let urlPath = `/api/v1/private/user/me`;
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     */
+    async apiV1PrivateUserMeGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GithubComTDiblikProjectTemplateApiHandlersGetUserMeHandlerResponse>> {
+        const requestOptions = await this.apiV1PrivateUserMeGetRequestOpts();
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => GithubComTDiblikProjectTemplateApiHandlersGetUserMeHandlerResponseFromJSON(jsonValue));
     }
@@ -132,8 +149,9 @@ export class ApiV1PrivateUserApi extends runtime.BaseAPI {
     }
 
     /**
+     * Creates request options for apiV1PrivateUserMePatch without sending the request
      */
-    async apiV1PrivateUserMePatchRaw(requestParameters: ApiV1PrivateUserMePatchRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+    async apiV1PrivateUserMePatchRequestOpts(requestParameters: ApiV1PrivateUserMePatchRequest): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -147,13 +165,20 @@ export class ApiV1PrivateUserApi extends runtime.BaseAPI {
 
         let urlPath = `/api/v1/private/user/me`;
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
             body: GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequestToJSON(requestParameters['githubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequest']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     */
+    async apiV1PrivateUserMePatchRaw(requestParameters: ApiV1PrivateUserMePatchRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+        const requestOptions = await this.apiV1PrivateUserMePatchRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse<any>(response);
     }

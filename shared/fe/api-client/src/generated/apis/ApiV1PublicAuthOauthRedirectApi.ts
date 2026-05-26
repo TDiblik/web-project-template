@@ -12,33 +12,37 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponse,
-  GithubComTDiblikProjectTemplateApiUtilsErrorResponseType,
-} from '../models/index';
 import {
+    type ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthParameter,
+    ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthParameterFromJSON,
+    ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthParameterToJSON,
+} from '../models/ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthParameter';
+import {
+    type GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponse,
     GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponseFromJSON,
     GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponseToJSON,
+} from '../models/GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponse';
+import {
+    type GithubComTDiblikProjectTemplateApiUtilsErrorResponseType,
     GithubComTDiblikProjectTemplateApiUtilsErrorResponseTypeFromJSON,
     GithubComTDiblikProjectTemplateApiUtilsErrorResponseTypeToJSON,
-} from '../models/index';
+} from '../models/GithubComTDiblikProjectTemplateApiUtilsErrorResponseType';
 
 export interface ApiV1PublicAuthOauthRedirectFacebookGetRequest {
-    redirectBackToAfterOauth?: ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthEnum;
+    redirectBackToAfterOauth?: ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthParameter;
 }
 
 export interface ApiV1PublicAuthOauthRedirectGithubGetRequest {
-    redirectBackToAfterOauth?: ApiV1PublicAuthOauthRedirectGithubGetRedirectBackToAfterOauthEnum;
+    redirectBackToAfterOauth?: ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthParameter;
 }
 
 export interface ApiV1PublicAuthOauthRedirectGoogleGetRequest {
-    redirectBackToAfterOauth?: ApiV1PublicAuthOauthRedirectGoogleGetRedirectBackToAfterOauthEnum;
+    redirectBackToAfterOauth?: ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthParameter;
 }
 
 export interface ApiV1PublicAuthOauthRedirectSpotifyGetRequest {
-    redirectBackToAfterOauth?: ApiV1PublicAuthOauthRedirectSpotifyGetRedirectBackToAfterOauthEnum;
+    redirectBackToAfterOauth?: ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthParameter;
 }
 
 /**
@@ -47,8 +51,9 @@ export interface ApiV1PublicAuthOauthRedirectSpotifyGetRequest {
 export class ApiV1PublicAuthOauthRedirectApi extends runtime.BaseAPI {
 
     /**
+     * Creates request options for apiV1PublicAuthOauthRedirectFacebookGet without sending the request
      */
-    async apiV1PublicAuthOauthRedirectFacebookGetRaw(requestParameters: ApiV1PublicAuthOauthRedirectFacebookGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponse>> {
+    async apiV1PublicAuthOauthRedirectFacebookGetRequestOpts(requestParameters: ApiV1PublicAuthOauthRedirectFacebookGetRequest): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         if (requestParameters['redirectBackToAfterOauth'] != null) {
@@ -64,12 +69,19 @@ export class ApiV1PublicAuthOauthRedirectApi extends runtime.BaseAPI {
 
         let urlPath = `/api/v1/public/auth/oauth/redirect/facebook`;
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     */
+    async apiV1PublicAuthOauthRedirectFacebookGetRaw(requestParameters: ApiV1PublicAuthOauthRedirectFacebookGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponse>> {
+        const requestOptions = await this.apiV1PublicAuthOauthRedirectFacebookGetRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponseFromJSON(jsonValue));
     }
@@ -82,8 +94,9 @@ export class ApiV1PublicAuthOauthRedirectApi extends runtime.BaseAPI {
     }
 
     /**
+     * Creates request options for apiV1PublicAuthOauthRedirectGithubGet without sending the request
      */
-    async apiV1PublicAuthOauthRedirectGithubGetRaw(requestParameters: ApiV1PublicAuthOauthRedirectGithubGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponse>> {
+    async apiV1PublicAuthOauthRedirectGithubGetRequestOpts(requestParameters: ApiV1PublicAuthOauthRedirectGithubGetRequest): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         if (requestParameters['redirectBackToAfterOauth'] != null) {
@@ -99,12 +112,19 @@ export class ApiV1PublicAuthOauthRedirectApi extends runtime.BaseAPI {
 
         let urlPath = `/api/v1/public/auth/oauth/redirect/github`;
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     */
+    async apiV1PublicAuthOauthRedirectGithubGetRaw(requestParameters: ApiV1PublicAuthOauthRedirectGithubGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponse>> {
+        const requestOptions = await this.apiV1PublicAuthOauthRedirectGithubGetRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponseFromJSON(jsonValue));
     }
@@ -117,8 +137,9 @@ export class ApiV1PublicAuthOauthRedirectApi extends runtime.BaseAPI {
     }
 
     /**
+     * Creates request options for apiV1PublicAuthOauthRedirectGoogleGet without sending the request
      */
-    async apiV1PublicAuthOauthRedirectGoogleGetRaw(requestParameters: ApiV1PublicAuthOauthRedirectGoogleGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponse>> {
+    async apiV1PublicAuthOauthRedirectGoogleGetRequestOpts(requestParameters: ApiV1PublicAuthOauthRedirectGoogleGetRequest): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         if (requestParameters['redirectBackToAfterOauth'] != null) {
@@ -134,12 +155,19 @@ export class ApiV1PublicAuthOauthRedirectApi extends runtime.BaseAPI {
 
         let urlPath = `/api/v1/public/auth/oauth/redirect/google`;
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     */
+    async apiV1PublicAuthOauthRedirectGoogleGetRaw(requestParameters: ApiV1PublicAuthOauthRedirectGoogleGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponse>> {
+        const requestOptions = await this.apiV1PublicAuthOauthRedirectGoogleGetRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponseFromJSON(jsonValue));
     }
@@ -152,8 +180,9 @@ export class ApiV1PublicAuthOauthRedirectApi extends runtime.BaseAPI {
     }
 
     /**
+     * Creates request options for apiV1PublicAuthOauthRedirectSpotifyGet without sending the request
      */
-    async apiV1PublicAuthOauthRedirectSpotifyGetRaw(requestParameters: ApiV1PublicAuthOauthRedirectSpotifyGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponse>> {
+    async apiV1PublicAuthOauthRedirectSpotifyGetRequestOpts(requestParameters: ApiV1PublicAuthOauthRedirectSpotifyGetRequest): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         if (requestParameters['redirectBackToAfterOauth'] != null) {
@@ -169,12 +198,19 @@ export class ApiV1PublicAuthOauthRedirectApi extends runtime.BaseAPI {
 
         let urlPath = `/api/v1/public/auth/oauth/redirect/spotify`;
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     */
+    async apiV1PublicAuthOauthRedirectSpotifyGetRaw(requestParameters: ApiV1PublicAuthOauthRedirectSpotifyGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponse>> {
+        const requestOptions = await this.apiV1PublicAuthOauthRedirectSpotifyGetRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponseFromJSON(jsonValue));
     }
@@ -187,36 +223,3 @@ export class ApiV1PublicAuthOauthRedirectApi extends runtime.BaseAPI {
     }
 
 }
-
-/**
- * @export
- */
-export const ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthEnum = {
-    Index: 'index',
-    Settings: 'settings'
-} as const;
-export type ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthEnum = typeof ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthEnum[keyof typeof ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthEnum];
-/**
- * @export
- */
-export const ApiV1PublicAuthOauthRedirectGithubGetRedirectBackToAfterOauthEnum = {
-    Index: 'index',
-    Settings: 'settings'
-} as const;
-export type ApiV1PublicAuthOauthRedirectGithubGetRedirectBackToAfterOauthEnum = typeof ApiV1PublicAuthOauthRedirectGithubGetRedirectBackToAfterOauthEnum[keyof typeof ApiV1PublicAuthOauthRedirectGithubGetRedirectBackToAfterOauthEnum];
-/**
- * @export
- */
-export const ApiV1PublicAuthOauthRedirectGoogleGetRedirectBackToAfterOauthEnum = {
-    Index: 'index',
-    Settings: 'settings'
-} as const;
-export type ApiV1PublicAuthOauthRedirectGoogleGetRedirectBackToAfterOauthEnum = typeof ApiV1PublicAuthOauthRedirectGoogleGetRedirectBackToAfterOauthEnum[keyof typeof ApiV1PublicAuthOauthRedirectGoogleGetRedirectBackToAfterOauthEnum];
-/**
- * @export
- */
-export const ApiV1PublicAuthOauthRedirectSpotifyGetRedirectBackToAfterOauthEnum = {
-    Index: 'index',
-    Settings: 'settings'
-} as const;
-export type ApiV1PublicAuthOauthRedirectSpotifyGetRedirectBackToAfterOauthEnum = typeof ApiV1PublicAuthOauthRedirectSpotifyGetRedirectBackToAfterOauthEnum[keyof typeof ApiV1PublicAuthOauthRedirectSpotifyGetRedirectBackToAfterOauthEnum];

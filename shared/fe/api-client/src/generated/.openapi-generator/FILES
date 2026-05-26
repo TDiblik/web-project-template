@@ -6,6 +6,7 @@ apis/ApiV1PublicAuthOauthApi.ts
 apis/ApiV1PublicAuthOauthRedirectApi.ts
 apis/index.ts
 index.ts
+models/ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthParameter.ts
 models/GithubComTDiblikProjectTemplateApiHandlersAuthHandlerResponse.ts
 models/GithubComTDiblikProjectTemplateApiHandlersGetUserMeHandlerResponse.ts
 models/GithubComTDiblikProjectTemplateApiHandlersLoginHandlerRequestBody.ts
@@ -15,5 +16,8 @@ models/GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequest.ts
 models/GithubComTDiblikProjectTemplateApiHandlersSignUpHandlerRequestBody.ts
 models/GithubComTDiblikProjectTemplateApiModelsUserModelDB.ts
 models/GithubComTDiblikProjectTemplateApiUtilsErrorResponseType.ts
+models/PreferedLanguage.ts
+models/PreferedTheme.ts
+models/RedirectBackToAfterOauth.ts
 models/index.ts
 runtime.ts

@@ -16,7 +16,8 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "ignoreDeprecations": "6.0"
   },
   "include": ["./src/**/*"],
   "exclude": ["./src/generated/**/*"],

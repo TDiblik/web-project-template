@@ -12,18 +12,17 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponse,
-  GithubComTDiblikProjectTemplateApiUtilsErrorResponseType,
-} from '../models/index';
 import {
+    type GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponse,
     GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponseFromJSON,
     GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponseToJSON,
+} from '../models/GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponse';
+import {
+    type GithubComTDiblikProjectTemplateApiUtilsErrorResponseType,
     GithubComTDiblikProjectTemplateApiUtilsErrorResponseTypeFromJSON,
     GithubComTDiblikProjectTemplateApiUtilsErrorResponseTypeToJSON,
-} from '../models/index';
+} from '../models/GithubComTDiblikProjectTemplateApiUtilsErrorResponseType';
 
 export interface ApiV1PublicAuthOauthReturnGetRequest {
     state: string;
@@ -36,8 +35,9 @@ export interface ApiV1PublicAuthOauthReturnGetRequest {
 export class ApiV1PublicAuthOauthApi extends runtime.BaseAPI {
 
     /**
+     * Creates request options for apiV1PublicAuthOauthReturnGet without sending the request
      */
-    async apiV1PublicAuthOauthReturnGetRaw(requestParameters: ApiV1PublicAuthOauthReturnGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponse>> {
+    async apiV1PublicAuthOauthReturnGetRequestOpts(requestParameters: ApiV1PublicAuthOauthReturnGetRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['state'] == null) {
             throw new runtime.RequiredError(
                 'state',
@@ -71,12 +71,19 @@ export class ApiV1PublicAuthOauthApi extends runtime.BaseAPI {
 
         let urlPath = `/api/v1/public/auth/oauth/return`;
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     */
+    async apiV1PublicAuthOauthReturnGetRaw(requestParameters: ApiV1PublicAuthOauthReturnGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponse>> {
+        const requestOptions = await this.apiV1PublicAuthOauthReturnGetRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponseFromJSON(jsonValue));
     }

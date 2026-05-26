@@ -13,6 +13,21 @@
  */
 
 import { mapValues } from '../runtime';
+import type { PreferedTheme } from './PreferedTheme';
+import {
+    PreferedThemeFromJSON,
+    PreferedThemeFromJSONTyped,
+    PreferedThemeToJSON,
+    PreferedThemeToJSONTyped,
+} from './PreferedTheme';
+import type { PreferedLanguage } from './PreferedLanguage';
+import {
+    PreferedLanguageFromJSON,
+    PreferedLanguageFromJSONTyped,
+    PreferedLanguageToJSON,
+    PreferedLanguageToJSONTyped,
+} from './PreferedLanguage';
+
 /**
  * 
  * @export
@@ -32,37 +47,19 @@ export interface GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerReq
      */
     lastName?: string;
     /**
-     *  omitempty 
-     * @type {string}
+     * 
+     * @type {PreferedLanguage}
      * @memberof GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequest
      */
-    preferedLanguage?: GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequestPreferedLanguageEnum;
+    preferedLanguage?: PreferedLanguage;
     /**
-     *  omitempty 
-     * @type {string}
+     * 
+     * @type {PreferedTheme}
      * @memberof GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequest
      */
-    preferedTheme?: GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequestPreferedThemeEnum;
+    preferedTheme?: PreferedTheme;
 }
 
-
-/**
- * @export
- */
-export const GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequestPreferedLanguageEnum = {
-    Cs: 'cs',
-    En: 'en'
-} as const;
-export type GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequestPreferedLanguageEnum = typeof GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequestPreferedLanguageEnum[keyof typeof GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequestPreferedLanguageEnum];
-
-/**
- * @export
- */
-export const GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequestPreferedThemeEnum = {
-    Light: 'light',
-    Dark: 'dark'
-} as const;
-export type GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequestPreferedThemeEnum = typeof GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequestPreferedThemeEnum[keyof typeof GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequestPreferedThemeEnum];
 
 
 /**
@@ -84,8 +81,8 @@ export function GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequ
         
         'firstName': json['first_name'] == null ? undefined : json['first_name'],
         'lastName': json['last_name'] == null ? undefined : json['last_name'],
-        'preferedLanguage': json['prefered_language'] == null ? undefined : json['prefered_language'],
-        'preferedTheme': json['prefered_theme'] == null ? undefined : json['prefered_theme'],
+        'preferedLanguage': json['prefered_language'] == null ? undefined : PreferedLanguageFromJSON(json['prefered_language']),
+        'preferedTheme': json['prefered_theme'] == null ? undefined : PreferedThemeFromJSON(json['prefered_theme']),
     };
 }
 
@@ -102,8 +99,8 @@ export function GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequ
         
         'first_name': value['firstName'],
         'last_name': value['lastName'],
-        'prefered_language': value['preferedLanguage'],
-        'prefered_theme': value['preferedTheme'],
+        'prefered_language': PreferedLanguageToJSON(value['preferedLanguage']),
+        'prefered_theme': PreferedThemeToJSON(value['preferedTheme']),
     };
 }
 

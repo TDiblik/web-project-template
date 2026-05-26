@@ -2,7 +2,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {t} from "i18next";
 import * as z from "zod";
 
-export {zodResolver, z};
+export {z, zodResolver};
 
 // ----------- General -----------
 export const EmailSchema = z.email({error: () => t("validation.email.invalid")});

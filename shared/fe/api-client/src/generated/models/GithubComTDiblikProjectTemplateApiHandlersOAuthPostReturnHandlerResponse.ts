@@ -13,6 +13,14 @@
  */
 
 import { mapValues } from '../runtime';
+import type { RedirectBackToAfterOauth } from './RedirectBackToAfterOauth';
+import {
+    RedirectBackToAfterOauthFromJSON,
+    RedirectBackToAfterOauthFromJSONTyped,
+    RedirectBackToAfterOauthToJSON,
+    RedirectBackToAfterOauthToJSONTyped,
+} from './RedirectBackToAfterOauth';
+
 /**
  * 
  * @export
@@ -27,21 +35,12 @@ export interface GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandle
     authToken: string;
     /**
      * 
-     * @type {string}
+     * @type {RedirectBackToAfterOauth}
      * @memberof GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponse
      */
-    redirectBackToAfterOauth: GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponseRedirectBackToAfterOauthEnum;
+    redirectBackToAfterOauth: RedirectBackToAfterOauth;
 }
 
-
-/**
- * @export
- */
-export const GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponseRedirectBackToAfterOauthEnum = {
-    Index: 'index',
-    Settings: 'settings'
-} as const;
-export type GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponseRedirectBackToAfterOauthEnum = typeof GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponseRedirectBackToAfterOauthEnum[keyof typeof GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponseRedirectBackToAfterOauthEnum];
 
 
 /**
@@ -64,7 +63,7 @@ export function GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandler
     return {
         
         'authToken': json['auth_token'],
-        'redirectBackToAfterOauth': json['redirect_back_to_after_oauth'],
+        'redirectBackToAfterOauth': RedirectBackToAfterOauthFromJSON(json['redirect_back_to_after_oauth']),
     };
 }
 
@@ -80,7 +79,7 @@ export function GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandler
     return {
         
         'auth_token': value['authToken'],
-        'redirect_back_to_after_oauth': value['redirectBackToAfterOauth'],
+        'redirect_back_to_after_oauth': RedirectBackToAfterOauthToJSON(value['redirectBackToAfterOauth']),
     };
 }
 
