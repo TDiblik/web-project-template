@@ -16,7 +16,7 @@ api-install:
 	cd ./api && go mod tidy
 
 api-build:
-	cd ./api && go build -o ./tmp/main .
+	cd ./api && go build -ldflags="-s -w" -trimpath -o ./tmp/main .
 
 api-update:
 	cd ./api && go get -u all && go mod tidy && gofmt -w -l .
