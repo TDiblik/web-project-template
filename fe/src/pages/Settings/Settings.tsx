@@ -42,14 +42,15 @@ export default function SettingsPage() {
           <h1 className="text-3xl font-bold">{t("settingsPage.pageTitle")}</h1>
           <div className="flex items-center gap-2">
             <div className="dropdown dropdown-end">
-              <label tabIndex={0} className="btn btn-sm gap-1">
+              <button type="button" className="btn btn-sm gap-1">
                 {t(`layout.changeLanguage.${i18n.language}`)}
                 <HiOutlineChevronDown className="w-4 h-4 ml-1" />
-              </label>
-              <ul tabIndex={0} className="dropdown-content z-1 menu p-2 shadow bg-base-100 rounded-box w-32">
+              </button>
+              <ul className="dropdown-content z-1 menu p-2 shadow bg-base-100 rounded-box w-32">
                 {TranslationPossibilities.map((lang) => (
                   <li key={lang}>
                     <button
+                      type="button"
                       onClick={() => {
                         changeLanguage(lang);
                         (document.activeElement as HTMLElement)?.blur();
@@ -64,6 +65,7 @@ export default function SettingsPage() {
             </div>
             <div className="w-px h-5 bg-base-300 mx-2"></div>
             <button
+              type="button"
               onClick={() => changeTheme(theme === "dark" ? "light" : "dark")}
               className="flex items-center gap-1 px-2.5 py-1 text-sm rounded-md border border-base-300 text-base-content hover:border-primary/50 hover:text-primary transition cursor-pointer"
             >
@@ -85,7 +87,9 @@ export default function SettingsPage() {
                       <span className="text-4xl">{loggedUser.initials}</span>
                     </div>
                   )}
-                  <button className="btn btn-sm btn-outline w-full">{t("settingsPage.changeAvatar")}</button>
+                  <button type="button" className="btn btn-sm btn-outline w-full">
+                    {t("settingsPage.changeAvatar")}
+                  </button>
                 </>
               )}
             </div>
@@ -154,7 +158,9 @@ export default function SettingsPage() {
                     <TextInput label={t("settingsPage.firstName.label")} name="firstName" placeholder={t("settingsPage.firstName.placeholder")} hasBigText />
                     <TextInput label={t("settingsPage.lastName.label")} name="lastName" placeholder={t("settingsPage.lastName.placeholder")} hasBigText />
                   </div>
-                  <button className="btn btn-primary w-full mt-2">{t("settingsPage.saveChanges")}</button>
+                  <button type="submit" className="btn btn-primary w-full mt-2">
+                    {t("settingsPage.saveChanges")}
+                  </button>
                 </div>
                 <div className="p-6 rounded-xl shadow-sm bg-base-100 space-y-4">
                   <h2 className="font-semibold text-lg">{t("settingsPage.changePassword")}</h2>
@@ -174,7 +180,9 @@ export default function SettingsPage() {
                       hasBigText
                     />
                   </div>
-                  <button className="btn btn-primary w-full mt-2">{t("settingsPage.savePassword")}</button>
+                  <button type="submit" className="btn btn-primary w-full mt-2">
+                    {t("settingsPage.savePassword")}
+                  </button>
                 </div>
               </form>
             </FormProvider>
@@ -199,10 +207,11 @@ const OAuthButton: React.FC<OAuthButtonProps> = ({provider, icon, connected, tex
 
   return (
     <button
+      type="button"
       onClick={() =>
         !connected &&
         onConnect().then((s) => {
-          window.location.href = s.redirectUrl!;
+          if (s.redirectUrl) window.location.href = s.redirectUrl;
         })
       }
       className={`group relative flex items-center justify-between w-full px-4 py-2 rounded-md border transition ${

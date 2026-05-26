@@ -95,7 +95,7 @@ const Layout: React.FC<React.PropsWithChildren> = ({children}) => {
         {/* Avatar & Settings */}
         <div className="border-t border-base-300 p-4">
           <div ref={profileMenuRef} className={`dropdown dropdown-top dropdown-end w-full cursor-pointer ${profileOpen ? "dropdown-open" : ""}`}>
-            <div onClick={toggleProfileMenu} role="button" className="flex items-center w-full">
+            <button type="button" onClick={toggleProfileMenu} className="flex items-center w-full">
               {loggedUser && (
                 <div className={`btn btn-ghost btn-circle avatar ${!loggedUser.avatarUrl ? "avatar-placeholder" : ""}`}>
                   <div className="w-12 rounded-full bg-neutral text-neutral-content">
@@ -104,7 +104,7 @@ const Layout: React.FC<React.PropsWithChildren> = ({children}) => {
                 </div>
               )}
               <span className="ml-2 text-base font-medium normal-case">{loggedUser?.fullName}</span>
-            </div>
+            </button>
 
             <ul className="dropdown-content menu rounded-box z-50 mb-2 w-52 bg-base-100 p-2 shadow">
               <li>
@@ -114,7 +114,7 @@ const Layout: React.FC<React.PropsWithChildren> = ({children}) => {
               </li>
 
               <li className="relative">
-                <button className="flex justify-between w-full" onClick={() => toggleMenu("language")}>
+                <button type="button" className="flex justify-between w-full" onClick={() => toggleMenu("language")}>
                   {t("layout.changeLanguage.label")}
                 </button>
                 <AnimatePresence>
@@ -122,9 +122,13 @@ const Layout: React.FC<React.PropsWithChildren> = ({children}) => {
                     <motion.ul {...toggleMenuAnimation} className={toggleMenuClasses}>
                       {TranslationPossibilities.map((lang) => (
                         <li key={lang}>
-                          <a className={i18n.language === lang ? "font-bold text-primary" : ""} onClick={() => changeLanguageAndClose(lang)}>
+                          <button
+                            type="button"
+                            className={i18n.language === lang ? "font-bold text-primary w-full text-left" : "w-full text-left"}
+                            onClick={() => changeLanguageAndClose(lang)}
+                          >
                             {t(`layout.changeLanguage.${lang}`)}
-                          </a>
+                          </button>
                         </li>
                       ))}
                     </motion.ul>
@@ -133,7 +137,7 @@ const Layout: React.FC<React.PropsWithChildren> = ({children}) => {
               </li>
 
               <li className="relative">
-                <button className="flex justify-between w-full" onClick={() => toggleMenu("theme")}>
+                <button type="button" className="flex justify-between w-full" onClick={() => toggleMenu("theme")}>
                   {t("layout.changeTheme.label")}
                 </button>
                 <AnimatePresence>
@@ -141,9 +145,13 @@ const Layout: React.FC<React.PropsWithChildren> = ({children}) => {
                     <motion.ul {...toggleMenuAnimation} className={toggleMenuClasses}>
                       {ThemePosibilities.map((s) => (
                         <li key={s}>
-                          <a className={theme === s ? "font-bold text-primary" : ""} onClick={() => changeThemeAndClose(s)}>
+                          <button
+                            type="button"
+                            className={theme === s ? "font-bold text-primary w-full text-left" : "w-full text-left"}
+                            onClick={() => changeThemeAndClose(s)}
+                          >
                             {t(`layout.changeTheme.${s}`)}
-                          </a>
+                          </button>
                         </li>
                       ))}
                     </motion.ul>

@@ -12,16 +12,17 @@ const HiddenBooleanInputInner: React.FC<{
   onChange: (value: boolean) => void;
   fieldValue: boolean;
   ref: React.Ref<HTMLDivElement>;
-  rest: any;
+  name: string;
+  onBlur: () => void;
   containerProps?: React.HTMLAttributes<HTMLDivElement>;
-}> = ({value, onChange, fieldValue, ref, rest, containerProps}) => {
+}> = ({value, onChange, fieldValue, ref, name, onBlur, containerProps}) => {
   useEffect(() => {
     onChange(value);
   }, [value, onChange]);
 
   return (
     <div className="hidden" ref={ref} {...containerProps}>
-      <input type="hidden" value={fieldValue ? "true" : "false"} onChange={(e) => onChange(e.target.value === "true")} {...rest} />
+      <input type="hidden" name={name} onBlur={onBlur} value={fieldValue ? "true" : "false"} onChange={(e) => onChange(e.target.value === "true")} />
     </div>
   );
 };
@@ -40,7 +41,8 @@ export const HiddenBooleanInput: React.FC<HiddenBooleanInputProps> = ({name, val
           onChange={field.onChange}
           fieldValue={field.value}
           ref={field.ref}
-          rest={field}
+          name={field.name}
+          onBlur={field.onBlur}
           containerProps={containerProps}
         />
       )}

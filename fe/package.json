@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "NODE_ENV=production tsgo && NODE_ENV=production vite build --mode production",
-    "lint": "biome check --write --unsafe --max-diagnostics none"
+    "lint": "biome check --write --unsafe --max-diagnostics none && bun run tsgo --noEmit -p tsconfig.app.json"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

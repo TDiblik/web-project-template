@@ -32,7 +32,7 @@ export const TextInput: React.FC<TextInputProps> = (props) => {
             <fieldset className="fieldset">
               <legend className="fieldset-legend pb-1">
                 {props.label && (
-                  <label className={`${props.hasBigText && "text-base font-normal"} label`} {...props.labelProps}>
+                  <label htmlFor={props.name} className={`${props.hasBigText && "text-base font-normal"} label`} {...props.labelProps}>
                     <span className={`label-text ${hasError ? "text-red-500" : ""} ${props.labelSpanAdditionalClassname}`} {...props.labelSpanProps}>
                       {props.label}
                     </span>
@@ -40,6 +40,7 @@ export const TextInput: React.FC<TextInputProps> = (props) => {
                 )}
               </legend>
               <input
+                id={props.name}
                 type="text"
                 placeholder={props.placeholder}
                 disabled={props.isDisabled}

@@ -9,7 +9,7 @@
   "private": true,
   "scripts": {
     "start": "bun run build --watch",
-    "build": "NODE_ENV=production tsgo && NODE_ENV=production vite build"
+    "build": "NODE_ENV=production vite build && NODE_ENV=production tsgo"
   },
   "type": "module",
   "typings": "dist/index.d.ts",

@@ -38,28 +38,11 @@
     "enabled": true,
     "rules": {
       "recommended": true,
-      "suspicious": {
-        "noExplicitAny": "off",
-        "noReactSpecificProps": "off"
-      },
       "correctness": {
-        "noUnusedVariables": "warn",
-        "useExhaustiveDependencies": "off"
+        "noUnusedVariables": "warn"
       },
       "style": {
-        "useConst": "warn",
-        "noNonNullAssertion": "off"
-      },
-      "a11y": {
-        "noStaticElementInteractions": "off",
-        "useValidAnchor": "off",
-        "useButtonType": "off",
-        "noLabelWithoutControl": "off",
-        "useKeyWithClickEvents": "off",
-        "useSemanticElements": "off",
-        "noSvgWithoutTitle": "off",
-        "useFocusableInteractive": "off",
-        "noNoninteractiveTabindex": "off"
+        "useConst": "warn"
       }
     }
   }

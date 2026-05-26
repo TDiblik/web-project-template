@@ -17,29 +17,32 @@ import Settings from "./pages/Settings/Settings.tsx";
 import {routes} from "./utils/routes.ts";
 
 const queryClient = new QueryClient();
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <ThemeProvider>
-            <I18nProvider>
-              <LoaderProvider>
-                <LoggedUserProvider>
-                  <Routes>
-                    <Route path={routes.login} element={<Login />} />
-                    <Route path={routes.loginOAuthRedirect} element={<OAuthRedirect />} />
-                    <Route path={routes.logout} element={<Logout />} />
+const rootElement = document.getElementById("root");
+if (rootElement) {
+  createRoot(rootElement).render(
+    <StrictMode>
+      <ErrorBoundary>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <ThemeProvider>
+              <I18nProvider>
+                <LoaderProvider>
+                  <LoggedUserProvider>
+                    <Routes>
+                      <Route path={routes.login} element={<Login />} />
+                      <Route path={routes.loginOAuthRedirect} element={<OAuthRedirect />} />
+                      <Route path={routes.logout} element={<Logout />} />
 
-                    <Route path={routes.index} element={<Home />} />
-                    <Route path={routes.settings} element={<Settings />} />
-                  </Routes>
-                </LoggedUserProvider>
-              </LoaderProvider>
-            </I18nProvider>
-          </ThemeProvider>
-        </BrowserRouter>
-      </QueryClientProvider>
-    </ErrorBoundary>
-  </StrictMode>,
-);
+                      <Route path={routes.index} element={<Home />} />
+                      <Route path={routes.settings} element={<Settings />} />
+                    </Routes>
+                  </LoggedUserProvider>
+                </LoaderProvider>
+              </I18nProvider>
+            </ThemeProvider>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    </StrictMode>,
+  );
+}

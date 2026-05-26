@@ -11,6 +11,7 @@ import {useLoadingStore} from "../../stores/LoadingStore";
 import {useAuthTokenStore} from "../../stores/TokenStore";
 import {AuthController, oAuthRedirectController} from "../../utils/api";
 import {TranslateApiErrorMessage} from "../../utils/general";
+import type {TranslateFn} from "../../utils/i18n";
 import {routes} from "../../utils/routes";
 import {useFormLog} from "../../utils/useFormLog";
 import {
@@ -49,7 +50,7 @@ export default function Login() {
     navigate(routes.index);
   };
 
-  const handleLoginErr = async (error: any) => {
+  const handleLoginErr = async (error: unknown) => {
     const apiError = await ConvertToApiError(error);
     setBEErrorMessage(TranslateApiErrorMessage(apiError));
   };
@@ -155,7 +156,7 @@ export default function Login() {
   );
 }
 
-const NameFields = ({t}: {t: any}) => {
+const NameFields = ({t}: {t: TranslateFn}) => {
   const [useUsername, setUseUsername] = useState(false);
   const animation = {
     initial: {opacity: 0, scale: 0.95},
@@ -197,7 +198,7 @@ const NameFields = ({t}: {t: any}) => {
   );
 };
 
-const PasswordFields = ({t, isSignUp}: {t: any; isSignUp: boolean}) => (
+const PasswordFields = ({t, isSignUp}: {t: TranslateFn; isSignUp: boolean}) => (
   <div className="flex gap-4">
     <TextInput
       label={t("loginPage.password.label")}
@@ -230,7 +231,7 @@ const OAuthButton = ({provider, icon, onClick}: {provider: string; icon: React.R
         onClick()
           .then((s) => {
             setLoading(false);
-            window.location.href = s.redirectUrl!;
+            if (s.redirectUrl) window.location.href = s.redirectUrl;
           })
           .finally(() => {
             if (loading) setLoading(false);

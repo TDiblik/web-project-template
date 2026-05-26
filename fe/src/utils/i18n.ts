@@ -1,10 +1,11 @@
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
-import {initReactI18next} from "react-i18next";
+import {initReactI18next, type useTranslation} from "react-i18next";
 import csTranslation from "../locales/cs/translation.json";
 import enTranslation from "../locales/en/translation.json";
 import {constants} from "./constants";
 
+export type TranslateFn = ReturnType<typeof useTranslation>["t"];
 const resources = {
   en: {
     translation: enTranslation,
