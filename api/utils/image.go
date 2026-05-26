@@ -19,7 +19,7 @@ func SaveImage(c fiber.Ctx, file *multipart.FileHeader, newFolderPath string, ma
 	}
 	defer func() {
 		if err := os.Remove(tempFilePath); err != nil {
-			LogErr(err)
+			Logger.Errorw("ERROR", "error", err)
 		}
 	}()
 

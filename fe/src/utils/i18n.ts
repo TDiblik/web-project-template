@@ -1,14 +1,24 @@
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
-import Backend from "i18next-http-backend";
 import {initReactI18next} from "react-i18next";
+import csTranslation from "../locales/cs/translation.json";
+import enTranslation from "../locales/en/translation.json";
 import {constants} from "./constants";
 
+const resources = {
+  en: {
+    translation: enTranslation,
+  },
+  cs: {
+    translation: csTranslation,
+  },
+};
+
 i18n
-  .use(Backend)
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
+    resources,
     load: "languageOnly",
     debug: constants.DEBUG,
     lng: (localStorage.getItem(constants.LOCAL_STORAGE_LOCALIZATION_KEY) ?? "").split("-")[0],

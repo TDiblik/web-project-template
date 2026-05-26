@@ -3,7 +3,6 @@ package utils
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/gofiber/fiber/v3"
@@ -20,7 +19,7 @@ func SetupCronJobs(ctx context.Context) {
 		return // only run cron jobs once (in master process)
 	}
 
-	log.Println("Setting up cron jobs (should be only once in logs): start")
+	Logger.Info("Setting up cron jobs (should be only once in logs): start")
 	jobs := []CronJob{
 		{
 			Name:     "Test 1",
@@ -41,7 +40,7 @@ func SetupCronJobs(ctx context.Context) {
 	for _, job := range jobs {
 		go startJob(ctx, job)
 	}
-	log.Println("Setting up cron jobs (should be only once in logs): done")
+	Logger.Info("Setting up cron jobs (should be only once in logs): done")
 }
 
 func startJob(ctx context.Context, job CronJob) {
@@ -52,11 +51,11 @@ func startJob(ctx context.Context, job CronJob) {
 	for {
 		select {
 		case <-ctx.Done():
-			Log(fmt.Sprintf("[Cron] Shutting down job: %s", job.Name))
+			Logger.Infof("[Cron] Shutting down job: %s", job.Name)
 			return
 		case <-ticker.C:
 			if running {
-				Log(fmt.Sprintf("[Cron] Skipping job (still running): %s", job.Name))
+				Logger.Infof("[Cron] Skipping job (still running): %s", job.Name)
 				continue
 			}
 
@@ -64,13 +63,13 @@ func startJob(ctx context.Context, job CronJob) {
 			go func() {
 				defer func() {
 					if r := recover(); r != nil {
-						Log(fmt.Sprintf("[Cron] Panic recovered in job %s: %v", job.Name, r))
+						Logger.Errorw("Panic recovered in cron job", "job", job.Name, "panic", r)
 					}
 					running = false
 				}()
 
 				if err := job.Task(ctx); err != nil {
-					LogErr(fmt.Errorf("[Cron] Error in job %s: %v", job.Name, err))
+					Logger.Errorw("Error in cron job", "job", job.Name, "error", err)
 				}
 			}()
 		}
@@ -78,14 +77,14 @@ func startJob(ctx context.Context, job CronJob) {
 }
 
 func exampleCronOne(context context.Context) error {
-	Log("[CRON] - test 1, every 30 minutes")
+	Logger.Info("[CRON] - test 1, every 30 minutes")
 	return nil
 }
 func exampleCronTwo(context context.Context) error {
-	Log("[CRON] - test 2, every 50 minutes")
+	Logger.Info("[CRON] - test 2, every 50 minutes")
 	return nil
 }
 func exampleCronThree(context context.Context) error {
-	Log("[CRON] - test 3, every 80 minutes, simulates error")
+	Logger.Info("[CRON] - test 3, every 80 minutes, simulates error")
 	return fmt.Errorf("fuck")
 }

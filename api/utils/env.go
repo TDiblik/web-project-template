@@ -3,12 +3,13 @@ package utils
 import (
 	"fmt"
 	"io/fs"
-	"log"
 	"os"
 	"strings"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/joho/godotenv"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/facebook"
 	"golang.org/x/oauth2/github"
@@ -56,28 +57,63 @@ type IEnvData struct {
 var EnvData IEnvData
 var FoldrePerms fs.FileMode = 0o777
 
-func SetupENV(env_files ...string) {
-	LogIfMaster("Setting up env variables: start")
+var Logger *zap.SugaredLogger
 
-	err := godotenv.Load(env_files...)
-	if err != nil {
-		LogIfMaster("Unable to load .env file: ", err)
-		LogIfMaster("This is normal in production environments, since all environment variables are set in the cloud.")
+func initLogger(debug bool, childStatus string) {
+	var config zap.Config
+	if debug {
+		config = zap.NewDevelopmentConfig()
+		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	} else {
+		config = zap.NewProductionConfig()
 	}
+	config.InitialFields = map[string]interface{}{
+		"pid":  os.Getpid(),
+		"proc": childStatus,
+	}
+
+	zapLogger, err := config.Build()
+	if err != nil {
+		fmt.Printf("Failed to initialize zap logger: %v\n", err)
+		os.Exit(1)
+	}
+	Logger = zapLogger.Sugar()
+}
+
+func SetupENV(env_files ...string) {
+	err := godotenv.Load(env_files...)
 
 	childStatus := "master"
 	if fiber.IsChild() {
 		childStatus = "child"
 	}
-	switch getEnvKeyOrPanic("GO_ENV") {
+
+	goEnv := os.Getenv("GO_ENV")
+	if goEnv == "" {
+		fmt.Println("Error determining GO_ENV (missing)")
+		os.Exit(1)
+	}
+
+	initLogger(goEnv == "development", childStatus)
+
+	if err != nil {
+		if !fiber.IsChild() && Logger != nil {
+			Logger.Errorw("Unable to load .env file", "error", err)
+			Logger.Info("This is normal in production environments, since all environment variables are set in the cloud.")
+		}
+	}
+
+	if !fiber.IsChild() && Logger != nil {
+		Logger.Info("Setting up env variables: start")
+	}
+
+	switch goEnv {
 	case "development":
 		EnvData.Debug = true
-		log.SetPrefix(fmt.Sprintf("[DEBUG] - %d (%s) - ", os.Getpid(), childStatus) + log.Prefix())
 	case "production":
 		EnvData.Debug = false
-		log.SetPrefix(fmt.Sprintf("[PROD] - %d (%s) - ", os.Getpid(), childStatus) + log.Prefix())
 	default:
-		log.Fatalln("Error determening GO_ENV (", os.Getenv("GO_ENV"), ")")
+		Logger.Fatalf("Error determening GO_ENV (%s)", goEnv)
 	}
 
 	EnvData.API_PORT = getEnvKeyOrPanic("API_PORT")
@@ -85,7 +121,7 @@ func SetupENV(env_files ...string) {
 	EnvData.DB_MIGRATIONS_PATH = getEnvKeyOrPanic("DB_MIGRATIONS_PATH")
 	if strings.ToLower(getEnvKeyOrPanic("DB_DEV_FORCE_MIGRATE_DOWN")) == "true" {
 		if !EnvData.Debug {
-			log.Fatalln("Cannot use DB_DEV_FORCE_MIGRATE_DOWN while in production mode!")
+			Logger.Fatal("Cannot use DB_DEV_FORCE_MIGRATE_DOWN while in production mode!")
 		}
 		EnvData.DB_DEV_FORCE_MIGRATE_DOWN = true
 	} else {
@@ -149,38 +185,24 @@ func SetupENV(env_files ...string) {
 
 	EnvData.IMAGES_PATH = getEnvKeyOrPanic("IMAGES_PATH")
 	if err := os.MkdirAll(EnvData.IMAGES_PATH, FoldrePerms); err != nil {
-		log.Fatal("Error ensuring images path (\"", EnvData.IMAGES_PATH, "\"): ", err)
+		Logger.Fatalw("Error ensuring images path", "path", EnvData.IMAGES_PATH, "error", err)
 	}
 	EnvData.IMAGES_PATH_AVATAR = GetAvatarImageFolder()
 	if err := os.MkdirAll(EnvData.IMAGES_PATH_AVATAR, FoldrePerms); err != nil {
-		log.Fatal("Error ensuring images path (\"", EnvData.IMAGES_PATH_AVATAR, "\"): ", err)
+		Logger.Fatalw("Error ensuring images path", "path", EnvData.IMAGES_PATH_AVATAR, "error", err)
 	}
 	EnvData.IMAGES_PATH_TEMP = GetTempImageFolder()
 	if err := os.MkdirAll(EnvData.IMAGES_PATH_TEMP, FoldrePerms); err != nil {
-		log.Fatal("Error ensuring images path (\"", EnvData.IMAGES_PATH_TEMP, "\"): ", err)
+		Logger.Fatalw("Error ensuring images path", "path", EnvData.IMAGES_PATH_TEMP, "error", err)
 	}
 
-	log.Println("Setting up env variables: done")
+	Logger.Info("Setting up env variables: done")
 }
 
 func getEnvKeyOrPanic(key string) string {
 	val := os.Getenv(key)
 	if len(val) == 0 {
-		log.Fatal("Error loading ", key)
+		Logger.Fatalf("Error loading %s", key)
 	}
 	return val
-}
-
-func Log(v ...any) {
-	log.Println(v...)
-}
-
-func LogErr(e error) {
-	log.Println("ERROR: ", e)
-}
-
-func LogIfMaster(v ...any) {
-	if !fiber.IsChild() {
-		Log(v...)
-	}
 }

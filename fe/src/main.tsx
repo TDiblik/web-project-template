@@ -4,6 +4,7 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {StrictMode} from "react";
 import {createRoot} from "react-dom/client";
 import {BrowserRouter, Route, Routes} from "react-router";
+import {ErrorBoundary} from "./components/ErrorBoundary.tsx";
 import {I18nProvider} from "./components/I18nProvider.tsx";
 import {LoaderProvider} from "./components/LoadingProvider.tsx";
 import {LoggedUserProvider} from "./components/LoggedUserProvider.tsx";
@@ -18,25 +19,27 @@ import {routes} from "./utils/routes.ts";
 const queryClient = new QueryClient();
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <ThemeProvider>
-          <I18nProvider>
-            <LoaderProvider>
-              <LoggedUserProvider>
-                <Routes>
-                  <Route path={routes.login} element={<Login />} />
-                  <Route path={routes.loginOAuthRedirect} element={<OAuthRedirect />} />
-                  <Route path={routes.logout} element={<Logout />} />
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <ThemeProvider>
+            <I18nProvider>
+              <LoaderProvider>
+                <LoggedUserProvider>
+                  <Routes>
+                    <Route path={routes.login} element={<Login />} />
+                    <Route path={routes.loginOAuthRedirect} element={<OAuthRedirect />} />
+                    <Route path={routes.logout} element={<Logout />} />
 
-                  <Route path={routes.index} element={<Home />} />
-                  <Route path={routes.settings} element={<Settings />} />
-                </Routes>
-              </LoggedUserProvider>
-            </LoaderProvider>
-          </I18nProvider>
-        </ThemeProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+                    <Route path={routes.index} element={<Home />} />
+                    <Route path={routes.settings} element={<Settings />} />
+                  </Routes>
+                </LoggedUserProvider>
+              </LoaderProvider>
+            </I18nProvider>
+          </ThemeProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ErrorBoundary>
   </StrictMode>,
 );

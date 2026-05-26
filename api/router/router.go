@@ -2,14 +2,17 @@ package router
 
 import (
 	"mime/multipart"
+	"strings"
 	"time"
 
 	"github.com/TDiblik/gofiber-swagger/gofiberswagger"
 	"github.com/TDiblik/project-template/api/constants"
+	"github.com/TDiblik/project-template/api/database"
 	"github.com/TDiblik/project-template/api/handlers"
 	"github.com/TDiblik/project-template/api/middleware"
 	"github.com/TDiblik/project-template/api/utils"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/limiter"
 	"github.com/gofiber/fiber/v3/middleware/static"
 )
 
@@ -17,13 +20,23 @@ func SetupRoutes(app *fiber.App) {
 	base := gofiberswagger.NewRouter(app)
 	api := base.Group("/api")
 	api.Get("/health", &gofiberswagger.RouteInfo{Responses: gofiberswagger.NewResponses(gofiberswagger.NewResponseInfo[struct{}]("200", "ok"))}, func(c fiber.Ctx) error {
-		return utils.OkResponse(c, fiber.Map{})
+		db, err := database.CreateConnection()
+		if err != nil || db.Ping() != nil {
+			return c.Status(fiber.StatusServiceUnavailable).JSON(fiber.Map{"status": "error", "message": "database unreachable"})
+		}
+		return utils.OkResponse(c, fiber.Map{"status": "ok"})
 	})
 	api_v1 := api.Group("/v1")
 	api_v1_public := api_v1.Group("/public")
 
 	// Auth
-	api_auth := api_v1_public.Group("/auth")
+	api_auth := api_v1_public.Group("/auth", limiter.New(limiter.Config{
+		Max:        25,
+		Expiration: 10 * time.Second,
+		LimitReached: func(c fiber.Ctx) error {
+			return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{"error": "Too many requests. Please try again later."})
+		},
+	}))
 	api_auth.Post("/login", &gofiberswagger.RouteInfo{
 		RequestBody: gofiberswagger.NewRequestBody[handlers.LoginHandlerRequestBody](),
 		Responses: utils.NewSwaggerResponsesWithErrors(
@@ -136,7 +149,7 @@ func SetupRoutes(app *fiber.App) {
 		})
 	}
 
-	cache_duration := time.Second * 60 * 60 * 60
+	cache_duration := time.Hour * 24 * 30 // 30 days
 	app_be_assests := app.Group(constants.BE_ASSETS_PATH_PREFIC)
 	app_be_assests.Use(constants.IMAGES_PATH_PREFIX, static.New(utils.EnvData.IMAGES_PATH, static.Config{
 		Compress:      true,
@@ -149,12 +162,21 @@ func SetupRoutes(app *fiber.App) {
 			IndexNames:    []string{"index.html"},
 			Compress:      true,
 			CacheDuration: cache_duration,
+			ModifyResponse: func(c fiber.Ctx) error {
+				if strings.HasPrefix(c.Path(), "/assets/") {
+					c.Set("Cache-Control", "public, max-age=31536000, immutable")
+				} else {
+					c.Set("Cache-Control", "no-cache")
+				}
+				return nil
+			},
 		}))
 		app.Get("/*", func(c fiber.Ctx) error {
+			c.Set("Cache-Control", "no-cache")
 			return c.SendFile("./public/index.html", fiber.SendFile{
 				Compress:      true,
 				ByteRange:     true,
-				CacheDuration: cache_duration,
+				CacheDuration: 0,
 			})
 		})
 	} else {

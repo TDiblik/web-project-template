@@ -387,7 +387,7 @@ func CreateOrUpdateUser(c fiber.Ctx, possiblyNewUser models.UserModelDB) (uuid.U
 		rows, err := db.NamedQuery(`
 			insert into users (
 				email, email_verified, password_hash, handle, first_name, last_name, avatar_url, github_id, github_email, github_handle, github_url, google_id, google_email, facebook_id, facebook_email, facebook_url, spotify_id, spotify_email, spotify_url
-			) 
+			)
 			values (
 				:email, :email_verified, :password_hash, :handle, :first_name, :last_name, :avatar_url, :github_id, :github_email, :github_handle, :github_url, :google_id, :google_email, :facebook_id, :facebook_email, :facebook_url, :spotify_id, :spotify_email, :spotify_url
 			)

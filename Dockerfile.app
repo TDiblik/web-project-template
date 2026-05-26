@@ -54,7 +54,7 @@ FROM alpine:latest
 WORKDIR /app
 
 # Install runtime dependencies only
-RUN apk add dumb-init
+RUN apk add --no-cache dumb-init curl
 
 # Create non-root user
 RUN addgroup -S app_perms && adduser -S -G app_perms app_perms
@@ -66,5 +66,8 @@ COPY --chown=app_perms:app_perms --from=api-build /build/api/database/migrations
 COPY --chown=app_perms:app_perms --from=fe-build /build/fe/dist ./public
 
 USER app_perms:app_perms
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:35231/api/health || exit 1
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["./api"]
