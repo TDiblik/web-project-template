@@ -14,6 +14,8 @@ const delayed = (delay: number) =>
     transition: {delay},
   }) as HTMLMotionProps<"p"> | HTMLMotionProps<"h1">;
 
+const usedCodes = new Set<string>();
+
 const OAuthRedirect = () => {
   const {t} = useTranslation();
   const navigate = useNavigate();
@@ -28,7 +30,8 @@ const OAuthRedirect = () => {
   const {setToken} = useAuthTokenStore();
 
   useEffect(() => {
-    if (!oAuthCode || !oAuthState) return;
+    if (!oAuthCode || !oAuthState || usedCodes.has(oAuthCode)) return;
+    usedCodes.add(oAuthCode);
 
     oAuthController
       .apiV1PublicAuthOauthReturnGet({
