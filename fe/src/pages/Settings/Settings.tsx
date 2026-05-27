@@ -42,7 +42,7 @@ export default function SettingsPage() {
           <h1 className="text-3xl font-bold">{t("settingsPage.pageTitle")}</h1>
           <div className="flex items-center gap-2">
             <div className="dropdown dropdown-end">
-              <button type="button" className="btn btn-sm gap-1">
+              <button type="button" tabIndex={0} className="btn btn-sm gap-1">
                 {t(`layout.changeLanguage.${i18n.language}`)}
                 <HiOutlineChevronDown className="w-4 h-4 ml-1" />
               </button>

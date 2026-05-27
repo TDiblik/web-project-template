@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "NODE_ENV=production tsgo && NODE_ENV=production vite build --mode production",
-    "lint": "biome check --write --unsafe --max-diagnostics none && bun run tsgo --noEmit -p tsconfig.app.json"
+    "lint": "biome check --write --unsafe --max-diagnostics none && tsgo --noEmit -p tsconfig.app.json"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
@@ -31,7 +31,7 @@
     "@types/node": "^25.9.1",
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
-    "@typescript/native-preview": "^7.0.0-dev.20260526.1",
+    "@typescript/native-preview": "^7.0.0-dev.20260527.1",
     "@vitejs/plugin-react": "^6.0.2",
     "vite": "^8.0.14"
   }

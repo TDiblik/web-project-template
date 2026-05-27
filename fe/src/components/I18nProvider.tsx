@@ -13,11 +13,6 @@ export const I18nProvider: React.FC<React.PropsWithChildren> = ({children}) => {
 
   const _language = i18n.language as TranslationPosibilitiesType;
   useEffect(() => {
-    if (i18n.language !== _language) {
-      changeLanguage(_language);
-    }
-  }, [_language]);
-  useEffect(() => {
     if (!isAuthenticatedAndLoaded()) return;
     if (!loggedUser?.preferedLanguage) {
       changeLanguage(_language as TranslationPosibilitiesType);
