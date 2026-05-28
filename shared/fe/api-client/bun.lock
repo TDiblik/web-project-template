@@ -5,8 +5,8 @@
     "": {
       "name": "@shared/api-client",
       "devDependencies": {
-        "@typescript/native-preview": "^7.0.0-dev.20260527.2",
-        "vite": "^8.0.14",
+        "@typescript/native-preview": "latest",
+        "vite": "latest",
       },
     },
   },

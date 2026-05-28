@@ -1,4 +1,4 @@
-import {type OauthRedirectHandlerRequest, type OauthRedirectHandlerResponse, PreferedLanguage, TranslationPossibilities} from "@shared/api-client";
+import {type OauthRedirectHandlerRequest, type OauthRedirectHandlerResponse, type PreferedLanguage, TranslationPossibilities} from "@shared/api-client";
 import type React from "react";
 import {useRef, useState} from "react";
 import {FormProvider, useForm} from "react-hook-form";
