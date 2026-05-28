@@ -5,23 +5,27 @@ import {useLoggedUserStore} from "./LoggedUserStore";
 
 interface TokenStoreState {
   tokenRaw: string | null;
+  refreshTokenRaw: string | null;
   token: () => IAuthToken | null;
-  setToken: (newToken: string) => void;
-  resetToken: () => void;
+  setTokens: (newToken: string, newRefreshToken: string) => void;
+  resetTokens: () => void;
   isAuthenticated: () => boolean;
   isAuthenticatedAndLoaded: () => boolean;
 }
 
 export const useAuthTokenStore = create<TokenStoreState>()((set, get) => ({
   tokenRaw: getRawJWT(),
+  refreshTokenRaw: localStorage.getItem(constants.LOCAL_STORAGE_REFRESH_TOKEN_KEY),
   token: () => parseJWT(get().tokenRaw),
-  setToken: (newToken) => {
+  setTokens: (newToken, newRefreshToken) => {
     localStorage.setItem(constants.LOCAL_STORAGE_TOKEN_KEY, newToken);
-    set(() => ({tokenRaw: newToken}));
+    localStorage.setItem(constants.LOCAL_STORAGE_REFRESH_TOKEN_KEY, newRefreshToken);
+    set(() => ({tokenRaw: newToken, refreshTokenRaw: newRefreshToken}));
   },
-  resetToken: () => {
+  resetTokens: () => {
     localStorage.removeItem(constants.LOCAL_STORAGE_TOKEN_KEY);
-    set(() => ({tokenRaw: undefined}));
+    localStorage.removeItem(constants.LOCAL_STORAGE_REFRESH_TOKEN_KEY);
+    set(() => ({tokenRaw: null, refreshTokenRaw: null}));
   },
   isAuthenticated: () => {
     const tokenParsed = get().token();

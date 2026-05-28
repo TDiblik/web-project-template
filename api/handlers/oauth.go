@@ -27,60 +27,87 @@ type OauthRedirectHandlerResponse struct {
 	RedirectURL string `json:"redirect_url"`
 }
 
-// todo: add param: isMobile which returns oauth redirect for mobile phones using OAUTH_CONFIG_GITHUB_MOBILE that will be generated
 func GithubRedirectHandler(c fiber.Ctx) error {
 	redirectParam := c.Query("redirect_back_to_after_oauth", string(utils.RedirectAfterOauthIndex))
 	redirectBackTo := utils.ValidateRedirectAfterOauth(redirectParam)
+	isMobile := c.Query("isMobile") == "true"
 
 	state, err := utils.GenerateOauthState(githubProviderName, redirectBackTo)
 	if err != nil {
 		return utils.InternalServerErrorResponse(c, fmt.Errorf("failed to generate OAuth state: %w", err))
 	}
+
+	config := utils.EnvData.OAUTH_GITHUB_CONFIG
+	if isMobile {
+		config = utils.EnvData.OAUTH_GITHUB_CONFIG_MOBILE
+	}
+
 	return utils.OkResponse(c, OauthRedirectHandlerResponse{
 		OAuthState:  state,
-		RedirectURL: utils.EnvData.OAUTH_GITHUB_CONFIG.AuthCodeURL(state),
+		RedirectURL: config.AuthCodeURL(state),
 	})
 }
 
 func GoogleRedirectHandler(c fiber.Ctx) error {
 	redirectParam := c.Query("redirect_back_to_after_oauth", string(utils.RedirectAfterOauthIndex))
 	redirectBackTo := utils.ValidateRedirectAfterOauth(redirectParam)
+	isMobile := c.Query("isMobile") == "true"
 
 	state, err := utils.GenerateOauthState(googleProviderName, redirectBackTo)
 	if err != nil {
 		return utils.InternalServerErrorResponse(c, fmt.Errorf("failed to generate OAuth state: %w", err))
 	}
+
+	config := utils.EnvData.OAUTH_GOOGLE_CONFIG
+	if isMobile {
+		config = utils.EnvData.OAUTH_GOOGLE_CONFIG_MOBILE
+	}
+
 	return utils.OkResponse(c, OauthRedirectHandlerResponse{
 		OAuthState:  state,
-		RedirectURL: utils.EnvData.OAUTH_GOOGLE_CONFIG.AuthCodeURL(state),
+		RedirectURL: config.AuthCodeURL(state),
 	})
 }
 
 func FacebookRedirectHandler(c fiber.Ctx) error {
 	redirectParam := c.Query("redirect_back_to_after_oauth", string(utils.RedirectAfterOauthIndex))
 	redirectBackTo := utils.ValidateRedirectAfterOauth(redirectParam)
+	isMobile := c.Query("isMobile") == "true"
 
 	state, err := utils.GenerateOauthState(facebookProviderName, redirectBackTo)
 	if err != nil {
 		return utils.InternalServerErrorResponse(c, fmt.Errorf("failed to generate OAuth state: %w", err))
 	}
+
+	config := utils.EnvData.OAUTH_FACEBOOK_CONFIG
+	if isMobile {
+		config = utils.EnvData.OAUTH_FACEBOOK_CONFIG_MOBILE
+	}
+
 	return utils.OkResponse(c, OauthRedirectHandlerResponse{
 		OAuthState:  state,
-		RedirectURL: utils.EnvData.OAUTH_FACEBOOK_CONFIG.AuthCodeURL(state),
+		RedirectURL: config.AuthCodeURL(state),
 	})
 }
 
 func SpotifyRedirectHandler(c fiber.Ctx) error {
 	redirectParam := c.Query("redirect_back_to_after_oauth", string(utils.RedirectAfterOauthIndex))
 	redirectBackTo := utils.ValidateRedirectAfterOauth(redirectParam)
+	isMobile := c.Query("isMobile") == "true"
 
 	state, err := utils.GenerateOauthState(spotifyProviderName, redirectBackTo)
 	if err != nil {
 		return utils.InternalServerErrorResponse(c, fmt.Errorf("failed to generate OAuth state: %w", err))
 	}
+
+	config := utils.EnvData.OAUTH_SPOTIFY_CONFIG
+	if isMobile {
+		config = utils.EnvData.OAUTH_SPOTIFY_CONFIG_MOBILE
+	}
+
 	return utils.OkResponse(c, OauthRedirectHandlerResponse{
 		OAuthState:  state,
-		RedirectURL: utils.EnvData.OAUTH_SPOTIFY_CONFIG.AuthCodeURL(state),
+		RedirectURL: config.AuthCodeURL(state),
 	})
 }
 
@@ -91,6 +118,7 @@ type OAuthPostReturnHandlerQuery struct {
 
 type OAuthPostReturnHandlerResponse struct {
 	AuthToken                string                   `json:"auth_token" validate:"required"`
+	RefreshToken             string                   `json:"refresh_token" validate:"required"`
 	RedirectBackToAfterOauth utils.RedirectAfterOauth `json:"redirect_back_to_after_oauth" validate:"required"`
 }
 
@@ -132,12 +160,14 @@ func OAuthPostReturnHandler(c fiber.Ctx) error {
 		return utils.InvalidRequestResponse(c, fmt.Errorf("invalid provider name (not implemented) inside the state: %w", err))
 	}
 
-	newAuthToken, err := GetJwtPostLogin(userUUID)
+	authToken, refreshToken, err := GetJwtPostLogin(userUUID)
 	if err != nil {
 		return utils.InternalServerErrorResponse(c, fmt.Errorf("unable to execute GetJwtPostLogin: %w", err))
 	}
+
 	return utils.OkResponse(c, OAuthPostReturnHandlerResponse{
-		AuthToken:                newAuthToken,
+		AuthToken:                authToken,
+		RefreshToken:             refreshToken,
 		RedirectBackToAfterOauth: redirect,
 	})
 }
@@ -352,7 +382,6 @@ func spotifyReturn(c fiber.Ctx, authCode string) (uuid.UUID, error) {
 	})
 }
 
-// todo: download user profile picture, save it, and save reference to db
 func CreateOrUpdateUser(c fiber.Ctx, possiblyNewUser models.UserModelDB) (uuid.UUID, error) {
 	db, err := database.CreateConnection()
 	if err != nil {
@@ -373,6 +402,18 @@ func CreateOrUpdateUser(c fiber.Ctx, possiblyNewUser models.UserModelDB) (uuid.U
 		return uuid.Nil, fmt.Errorf("unable to query exists staments inside CreateOrUpdateUser: %w", err)
 	}
 
+	processAvatar := func(avatarUrl string) string {
+		if strings.HasPrefix(avatarUrl, "http") {
+			newImageId, err := utils.DownloadAndSaveImage(avatarUrl, utils.EnvData.IMAGES_PATH_AVATAR, 512, 512)
+			if err == nil {
+				localUrl, _ := utils.GetAvatarImageUrl(newImageId)
+				return localUrl
+			}
+			utils.Logger.Errorw("Failed to download avatar", "url", avatarUrl, "error", err)
+		}
+		return avatarUrl
+	}
+
 	var existingUser models.UserModelDB
 	if !emailExists {
 		if !possiblyNewUser.Handle.Valid || handleExists {
@@ -381,6 +422,10 @@ func CreateOrUpdateUser(c fiber.Ctx, possiblyNewUser models.UserModelDB) (uuid.U
 				return uuid.Nil, fmt.Errorf("unable to generate unique handle: %w", genErr)
 			}
 			possiblyNewUser.Handle = utils.SQLNullStringFromString(newHandle)
+		}
+
+		if possiblyNewUser.AvatarUrl.Valid {
+			possiblyNewUser.AvatarUrl.String = processAvatar(possiblyNewUser.AvatarUrl.String)
 		}
 
 		// when adding a new oauth provider and user table fields, add the checks here:
@@ -435,8 +480,9 @@ func CreateOrUpdateUser(c fiber.Ctx, possiblyNewUser models.UserModelDB) (uuid.U
 		if !existingUser.LastName.Valid {
 			existingUser.LastName = possiblyNewUser.LastName
 		}
-		if !existingUser.AvatarUrl.Valid {
-			existingUser.AvatarUrl = possiblyNewUser.AvatarUrl
+		if !existingUser.AvatarUrl.Valid && possiblyNewUser.AvatarUrl.Valid {
+			existingUser.AvatarUrl.String = processAvatar(possiblyNewUser.AvatarUrl.String)
+			existingUser.AvatarUrl.Valid = true
 		}
 		if !existingUser.EmailVerified {
 			existingUser.EmailVerified = possiblyNewUser.EmailVerified
@@ -511,21 +557,20 @@ func CreateOrUpdateUser(c fiber.Ctx, possiblyNewUser models.UserModelDB) (uuid.U
 }
 
 // This MUST always be called ONLY IF THE USER WAS 100% AUTHENTICATED USING OAUTH OR PASSWORD
-func GetJwtPostLogin(userUUID uuid.UUID) (string, error) {
+func GetJwtPostLogin(userUUID uuid.UUID) (string, string, error) {
 	db, err := database.CreateConnection()
 	if err != nil {
-		return "", fmt.Errorf("unable to create connection to db inside GetJwtPostLogin: %w", err)
+		return "", "", fmt.Errorf("unable to create connection to db inside GetJwtPostLogin: %w", err)
+	}
+	var existingUser models.UserModelDB
+	if err := db.Get(&existingUser, `update users set last_login_at = now() where id = $1 returning *`, userUUID); err != nil {
+		return "", "", fmt.Errorf("unable to get existingUser inside GetJwtPostLogin: %w", err)
 	}
 
-	var userInfo models.UserModelDB
-	if err := db.Get(&userInfo, `update users set last_login_at = now() where id = $1 returning *`, userUUID); err != nil {
-		return "", fmt.Errorf("unable to select existing user: %w", err)
-	}
-
-	newAuthToken, err := utils.GenerateJWT(userInfo)
+	authToken, refreshToken, err := utils.GenerateTokens(existingUser)
 	if err != nil {
-		return "", fmt.Errorf("unable to generate new oauth token: %w", err)
+		return "", "", fmt.Errorf("unable to GenerateTokens inside GetJwtPostLogin: %w", err)
 	}
 
-	return newAuthToken, nil
+	return authToken, refreshToken, nil
 }

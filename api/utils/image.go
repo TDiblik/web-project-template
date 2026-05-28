@@ -1,7 +1,10 @@
 package utils
 
 import (
+	"fmt"
+	"io"
 	"mime/multipart"
+	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -22,6 +25,54 @@ func SaveImage(c fiber.Ctx, file *multipart.FileHeader, newFolderPath string, ma
 			Logger.Errorw("ERROR", "error", err)
 		}
 	}()
+
+	tempSavedSrc, err := imaging.Open(tempFilePath, imaging.AutoOrientation(true))
+	if err != nil {
+		return "", err
+	}
+	currentBounds := tempSavedSrc.Bounds()
+	shouldResize := (maxW > 0 && currentBounds.Dx() > maxW) || (maxH > 0 && currentBounds.Dy() > maxH)
+	if shouldResize {
+		tempSavedSrc = imaging.Fit(tempSavedSrc, maxW, maxH, imaging.Lanczos)
+	}
+
+	newImageId := uuid.New().String()
+	newFilePath := filepath.Join(newFolderPath, AddImageExtensionIfNeeded(newImageId))
+	if err := imaging.Save(tempSavedSrc, newFilePath, imaging.JPEGQuality(75)); err != nil {
+		return "", err
+	}
+
+	return newImageId, nil
+}
+
+func DownloadAndSaveImage(imageUrl string, newFolderPath string, maxW int, maxH int) (string, error) {
+	resp, err := http.Get(imageUrl)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("failed to download image: status %d", resp.StatusCode)
+	}
+
+	tempFilePath := GetTempImagePath(uuid.New().String())
+	out, err := os.Create(tempFilePath)
+	if err != nil {
+		return "", err
+	}
+	defer func() {
+		out.Close()
+		if err := os.Remove(tempFilePath); err != nil {
+			Logger.Errorw("ERROR", "error", err)
+		}
+	}()
+
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return "", err
+	}
+	out.Close()
 
 	tempSavedSrc, err := imaging.Open(tempFilePath, imaging.AutoOrientation(true))
 	if err != nil {

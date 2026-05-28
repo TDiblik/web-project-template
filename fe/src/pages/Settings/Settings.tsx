@@ -1,35 +1,102 @@
-import {type OauthRedirectHandlerRequest, TranslationPossibilities} from "@shared/api-client";
+import {type OauthRedirectHandlerRequest, type OauthRedirectHandlerResponse, PreferedLanguage, TranslationPossibilities} from "@shared/api-client";
 import type React from "react";
-import {useState} from "react";
+import {useRef, useState} from "react";
 import {FormProvider, useForm} from "react-hook-form";
 import {useTranslation} from "react-i18next";
 import {FaFacebook, FaGithub, FaGoogle, FaSpotify, FaTimes} from "react-icons/fa";
 import {HiOutlineChevronDown} from "react-icons/hi";
+import {toast} from "sonner";
 import Layout from "../../components/Layout";
 import {TextInput} from "../../components/TextInput";
 import {usei18nStore} from "../../stores/i18nStore";
 import {useLoadingStore} from "../../stores/LoadingStore";
 import {useLoggedUser} from "../../stores/LoggedUserStore";
 import {useThemeStore} from "../../stores/ThemeStore";
-import {oAuthRedirectController} from "../../utils/api";
-import {SignUpFirstPageSchema, type SignUpPageFormType, zodResolver} from "../../utils/validations";
+import {useAuthTokenStore} from "../../stores/TokenStore";
+import {oAuthRedirectController, UserController} from "../../utils/api";
+import {constants} from "../../utils/constants";
+import {type SettingsPageFormType, SettingsPageSchema, zodResolver} from "../../utils/validations";
 
 export default function SettingsPage() {
   const {i18n, t} = useTranslation();
-  const {loggedUser} = useLoggedUser();
+  const {loggedUser, refetchUser} = useLoggedUser();
   const {theme, changeTheme} = useThemeStore();
   const {changeLanguage} = usei18nStore();
   const {setLoading} = useLoadingStore();
-  const form = useForm<SignUpPageFormType>({
-    mode: "onChange",
-    defaultValues: loggedUser,
-    resolver: zodResolver(SignUpFirstPageSchema),
-  });
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const onSubmit = async () => {
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
     setLoading(true);
     try {
-      alert("Profile updated!");
+      await UserController.apiV1PrivateUserMeAvatarPost({
+        avatar: file,
+      });
+      toast.success(t("settingsPage.avatarUpdated") || "Avatar updated!");
+      await refetchUser();
+    } catch (_error) {
+      toast.error(t("settingsPage.avatarUpdateError") || "Failed to update avatar.");
+    } finally {
+      setLoading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const handleDisconnect = async (provider: string) => {
+    try {
+      setLoading(true);
+      const res = await fetch(`${constants.API_BASE_PATH}/api/v1/private/user/oauth/${provider}`, {
+        method: "DELETE",
+        headers: {
+          [constants.TOKEN_HEADER_KEY]: useAuthTokenStore.getState().tokenRaw ?? "",
+        },
+      });
+      if (!res.ok) {
+        if (res.status === 409) {
+          toast.error(t("settingsPage.cannotRemoveLastAuthMethod") || "Cannot remove your last authentication method.");
+        } else {
+          toast.error(t("settingsPage.disconnectError") || "Failed to disconnect account.");
+        }
+      } else {
+        toast.success(t("settingsPage.disconnectSuccess") || "Account disconnected.");
+        await refetchUser();
+      }
+    } catch (_e) {
+      toast.error(t("settingsPage.disconnectError") || "Failed to disconnect account.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const form = useForm<SettingsPageFormType>({
+    mode: "onChange",
+    defaultValues: {
+      firstName: loggedUser?.firstName ?? "",
+      lastName: loggedUser?.lastName ?? "",
+      password: "",
+      confirmPassword: "",
+    },
+    resolver: zodResolver(SettingsPageSchema),
+  });
+
+  const onSubmit = async (data: SettingsPageFormType) => {
+    setLoading(true);
+    try {
+      await UserController.apiV1PrivateUserMePatch({
+        githubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequest: {
+          firstName: data.firstName ?? undefined,
+          lastName: data.lastName ?? undefined,
+          preferedLanguage: i18n.language as PreferedLanguage,
+          preferedTheme: theme,
+          password: data.password ? data.password : undefined,
+        },
+      });
+      toast.success(t("settingsPage.profileUpdated") || "Profile updated!");
+      await refetchUser();
+    } catch (_error) {
+      toast.error(t("settingsPage.profileUpdateError") || "Failed to update profile.");
     } finally {
       setLoading(false);
     }
@@ -87,7 +154,8 @@ export default function SettingsPage() {
                       <span className="text-4xl">{loggedUser.initials}</span>
                     </div>
                   )}
-                  <button type="button" className="btn btn-sm btn-outline w-full">
+                  <input type="file" ref={fileInputRef} hidden accept="image/*" onChange={handleAvatarChange} />
+                  <button type="button" className="btn btn-sm btn-outline w-full" onClick={() => fileInputRef.current?.click()}>
                     {t("settingsPage.changeAvatar")}
                   </button>
                 </>
@@ -108,6 +176,7 @@ export default function SettingsPage() {
                       redirectBackToAfterOauth: "settings",
                     })
                   }
+                  onDisconnect={() => handleDisconnect("google")}
                 />
                 <OAuthButton
                   provider="Facebook"
@@ -120,6 +189,7 @@ export default function SettingsPage() {
                       redirectBackToAfterOauth: "settings",
                     })
                   }
+                  onDisconnect={() => handleDisconnect("facebook")}
                 />
                 <OAuthButton
                   provider="Spotify"
@@ -132,6 +202,7 @@ export default function SettingsPage() {
                       redirectBackToAfterOauth: "settings",
                     })
                   }
+                  onDisconnect={() => handleDisconnect("spotify")}
                 />
                 <OAuthButton
                   provider="Github"
@@ -144,6 +215,7 @@ export default function SettingsPage() {
                       redirectBackToAfterOauth: "settings",
                     })
                   }
+                  onDisconnect={() => handleDisconnect("github")}
                 />
               </div>
             </div>
@@ -199,10 +271,10 @@ interface OAuthButtonProps {
   connected: boolean;
   textConnect: string;
   textConnected: string;
-  onConnect: () => OauthRedirectHandlerRequest;
-  // onDisconnect: () => Promise<any>;
+  onConnect: () => OauthRedirectHandlerRequest | Promise<OauthRedirectHandlerRequest>;
+  onDisconnect: () => Promise<void>;
 }
-const OAuthButton: React.FC<OAuthButtonProps> = ({provider, icon, connected, textConnect, textConnected, onConnect}) => {
+const OAuthButton: React.FC<OAuthButtonProps> = ({provider, icon, connected, textConnect, textConnected, onConnect, onDisconnect}) => {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -210,7 +282,7 @@ const OAuthButton: React.FC<OAuthButtonProps> = ({provider, icon, connected, tex
       type="button"
       onClick={() =>
         !connected &&
-        onConnect().then((s) => {
+        onConnect().then((s: OauthRedirectHandlerResponse) => {
           if (s.redirectUrl) window.location.href = s.redirectUrl;
         })
       }
@@ -231,7 +303,14 @@ const OAuthButton: React.FC<OAuthButtonProps> = ({provider, icon, connected, tex
         <FaTimes
           size={16}
           className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-600 transition cursor-pointer"
-          onClick={() => console.log("todo")}
+          onClick={async (e) => {
+            e.stopPropagation();
+            try {
+              await onDisconnect();
+            } catch (err) {
+              console.error(err);
+            }
+          }}
         />
       )}
     </button>

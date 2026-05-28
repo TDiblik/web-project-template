@@ -37,6 +37,11 @@ export interface ApiV1PrivateUserMePatchRequest {
     githubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequest?: GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequest;
 }
 
+export interface ApiV1PrivateUserOauthProviderDeleteRequest {
+    provider: string;
+    provider2: string;
+}
+
 /**
  * 
  */
@@ -187,6 +192,61 @@ export class ApiV1PrivateUserApi extends runtime.BaseAPI {
      */
     async apiV1PrivateUserMePatch(requestParameters: ApiV1PrivateUserMePatchRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
         const response = await this.apiV1PrivateUserMePatchRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for apiV1PrivateUserOauthProviderDelete without sending the request
+     */
+    async apiV1PrivateUserOauthProviderDeleteRequestOpts(requestParameters: ApiV1PrivateUserOauthProviderDeleteRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['provider'] == null) {
+            throw new runtime.RequiredError(
+                'provider',
+                'Required parameter "provider" was null or undefined when calling apiV1PrivateUserOauthProviderDelete().'
+            );
+        }
+
+        if (requestParameters['provider2'] == null) {
+            throw new runtime.RequiredError(
+                'provider2',
+                'Required parameter "provider2" was null or undefined when calling apiV1PrivateUserOauthProviderDelete().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["x-user-token"] = await this.configuration.apiKey("x-user-token"); // x-user-token authentication
+        }
+
+
+        let urlPath = `/api/v1/private/user/oauth/{provider}`;
+        urlPath = urlPath.replace('{provider}', encodeURIComponent(String(requestParameters['provider'])));
+        urlPath = urlPath.replace('{provider}', encodeURIComponent(String(requestParameters['provider2'])));
+
+        return {
+            path: urlPath,
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     */
+    async apiV1PrivateUserOauthProviderDeleteRaw(requestParameters: ApiV1PrivateUserOauthProviderDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+        const requestOptions = await this.apiV1PrivateUserOauthProviderDeleteRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     */
+    async apiV1PrivateUserOauthProviderDelete(requestParameters: ApiV1PrivateUserOauthProviderDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.apiV1PrivateUserOauthProviderDeleteRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

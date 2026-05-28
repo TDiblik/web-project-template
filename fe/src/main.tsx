@@ -4,6 +4,7 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {StrictMode} from "react";
 import {createRoot} from "react-dom/client";
 import {BrowserRouter, Route, Routes} from "react-router";
+import {Toaster} from "sonner";
 import {ErrorBoundary} from "./components/ErrorBoundary.tsx";
 import {I18nProvider} from "./components/I18nProvider.tsx";
 import {LoaderProvider} from "./components/LoadingProvider.tsx";
@@ -39,6 +40,7 @@ if (rootElement) {
                   </LoggedUserProvider>
                 </LoaderProvider>
               </I18nProvider>
+              <Toaster richColors position="top-right" />
             </ThemeProvider>
           </BrowserRouter>
         </QueryClientProvider>

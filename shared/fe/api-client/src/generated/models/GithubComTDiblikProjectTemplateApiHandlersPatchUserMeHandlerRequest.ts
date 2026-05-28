@@ -47,6 +47,12 @@ export interface GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerReq
      */
     lastName?: string;
     /**
+     *  omitempty 
+     * @type {string}
+     * @memberof GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequest
+     */
+    password?: string;
+    /**
      * 
      * @type {PreferedLanguage}
      * @memberof GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequest
@@ -81,6 +87,7 @@ export function GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequ
         
         'firstName': json['first_name'] == null ? undefined : json['first_name'],
         'lastName': json['last_name'] == null ? undefined : json['last_name'],
+        'password': json['password'] == null ? undefined : json['password'],
         'preferedLanguage': json['prefered_language'] == null ? undefined : PreferedLanguageFromJSON(json['prefered_language']),
         'preferedTheme': json['prefered_theme'] == null ? undefined : PreferedThemeFromJSON(json['prefered_theme']),
     };
@@ -99,6 +106,7 @@ export function GithubComTDiblikProjectTemplateApiHandlersPatchUserMeHandlerRequ
         
         'first_name': value['firstName'],
         'last_name': value['lastName'],
+        'password': value['password'],
         'prefered_language': PreferedLanguageToJSON(value['preferedLanguage']),
         'prefered_theme': PreferedThemeToJSON(value['preferedTheme']),
     };

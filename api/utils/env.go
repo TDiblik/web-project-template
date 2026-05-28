@@ -23,6 +23,7 @@ type IEnvData struct {
 	API_PORT                  string
 	API_PROD_URL              string
 	FE_PROD_URL               string
+	MOBILE_PROD_URL           string
 	DB_CONNECTION_STRING      string
 	DB_MIGRATIONS_PATH        string
 	DB_DEV_FORCE_MIGRATE_DOWN bool
@@ -36,18 +37,22 @@ type IEnvData struct {
 	OAUTH_GITHUB_CLIENT_ID     string
 	OAUTH_GITHUB_CLIENT_SECRET string
 	OAUTH_GITHUB_CONFIG        *oauth2.Config
+	OAUTH_GITHUB_CONFIG_MOBILE *oauth2.Config
 
 	OAUTH_GOOGLE_CLIENT_ID     string
 	OAUTH_GOOGLE_CLIENT_SECRET string
 	OAUTH_GOOGLE_CONFIG        *oauth2.Config
+	OAUTH_GOOGLE_CONFIG_MOBILE *oauth2.Config
 
 	OAUTH_FACEBOOK_CLIENT_ID     string
 	OAUTH_FACEBOOK_CLIENT_SECRET string
 	OAUTH_FACEBOOK_CONFIG        *oauth2.Config
+	OAUTH_FACEBOOK_CONFIG_MOBILE *oauth2.Config
 
 	OAUTH_SPOTIFY_CLIENT_ID     string
 	OAUTH_SPOTIFY_CLIENT_SECRET string
 	OAUTH_SPOTIFY_CONFIG        *oauth2.Config
+	OAUTH_SPOTIFY_CONFIG_MOBILE *oauth2.Config
 
 	IMAGES_PATH        string
 	IMAGES_PATH_AVATAR string
@@ -135,6 +140,10 @@ func SetupENV(env_files ...string) {
 	if !strings.HasSuffix(EnvData.FE_PROD_URL, "/") {
 		EnvData.FE_PROD_URL += "/"
 	}
+	EnvData.MOBILE_PROD_URL = getEnvKeyOrPanic("MOBILE_PROD_URL")
+	if !strings.HasSuffix(EnvData.MOBILE_PROD_URL, "/") {
+		EnvData.MOBILE_PROD_URL += "/"
+	}
 
 	EnvData.AUTH_JWT_SECRET = getEnvKeyOrPanic("AUTH_JWT_SECRET")
 	EnvData.AUTH_SECRET_BYTES = []byte(EnvData.AUTH_JWT_SECRET)
@@ -142,7 +151,6 @@ func SetupENV(env_files ...string) {
 	EnvData.OAUTH_JWT_SECRET = getEnvKeyOrPanic("OAUTH_JWT_SECRET")
 	EnvData.OAUTH_SECRET_BYTES = []byte(EnvData.OAUTH_JWT_SECRET)
 
-	// when adding a new oauth provider and user table fields, add the checks here:
 	EnvData.OAUTH_GITHUB_CLIENT_ID = getEnvKeyOrPanic("OAUTH_GITHUB_CLIENT_ID")
 	EnvData.OAUTH_GITHUB_CLIENT_SECRET = getEnvKeyOrPanic("OAUTH_GITHUB_CLIENT_SECRET")
 	EnvData.OAUTH_GITHUB_CONFIG = &oauth2.Config{
@@ -150,7 +158,14 @@ func SetupENV(env_files ...string) {
 		ClientSecret: EnvData.OAUTH_GITHUB_CLIENT_SECRET,
 		Scopes:       []string{"read:user", "user:email"},
 		Endpoint:     github.Endpoint,
-		RedirectURL:  JoinUrlOrPanic(EnvData.FE_PROD_URL, "/login/oauth/redirect"),
+		RedirectURL:  JoinUrlOrPanic(EnvData.FE_PROD_URL, "login/oauth/redirect"),
+	}
+	EnvData.OAUTH_GITHUB_CONFIG_MOBILE = &oauth2.Config{
+		ClientID:     EnvData.OAUTH_GITHUB_CLIENT_ID,
+		ClientSecret: EnvData.OAUTH_GITHUB_CLIENT_SECRET,
+		Scopes:       []string{"read:user", "user:email"},
+		Endpoint:     github.Endpoint,
+		RedirectURL:  JoinUrlOrPanic(EnvData.MOBILE_PROD_URL, "login/oauth/redirect"),
 	}
 
 	EnvData.OAUTH_GOOGLE_CLIENT_ID = getEnvKeyOrPanic("OAUTH_GOOGLE_CLIENT_ID")
@@ -160,7 +175,14 @@ func SetupENV(env_files ...string) {
 		ClientSecret: EnvData.OAUTH_GOOGLE_CLIENT_SECRET,
 		Scopes:       []string{"openid", "email", "profile"},
 		Endpoint:     google.Endpoint,
-		RedirectURL:  JoinUrlOrPanic(EnvData.FE_PROD_URL, "/login/oauth/redirect"),
+		RedirectURL:  JoinUrlOrPanic(EnvData.FE_PROD_URL, "login/oauth/redirect"),
+	}
+	EnvData.OAUTH_GOOGLE_CONFIG_MOBILE = &oauth2.Config{
+		ClientID:     EnvData.OAUTH_GOOGLE_CLIENT_ID,
+		ClientSecret: EnvData.OAUTH_GOOGLE_CLIENT_SECRET,
+		Scopes:       []string{"openid", "email", "profile"},
+		Endpoint:     google.Endpoint,
+		RedirectURL:  JoinUrlOrPanic(EnvData.MOBILE_PROD_URL, "login/oauth/redirect"),
 	}
 
 	EnvData.OAUTH_FACEBOOK_CLIENT_ID = getEnvKeyOrPanic("OAUTH_FACEBOOK_CLIENT_ID")
@@ -170,7 +192,14 @@ func SetupENV(env_files ...string) {
 		ClientSecret: EnvData.OAUTH_FACEBOOK_CLIENT_SECRET,
 		Scopes:       []string{"public_profile", "email", "user_link"},
 		Endpoint:     facebook.Endpoint,
-		RedirectURL:  JoinUrlOrPanic(EnvData.FE_PROD_URL, "/login/oauth/redirect"),
+		RedirectURL:  JoinUrlOrPanic(EnvData.FE_PROD_URL, "login/oauth/redirect"),
+	}
+	EnvData.OAUTH_FACEBOOK_CONFIG_MOBILE = &oauth2.Config{
+		ClientID:     EnvData.OAUTH_FACEBOOK_CLIENT_ID,
+		ClientSecret: EnvData.OAUTH_FACEBOOK_CLIENT_SECRET,
+		Scopes:       []string{"public_profile", "email", "user_link"},
+		Endpoint:     facebook.Endpoint,
+		RedirectURL:  JoinUrlOrPanic(EnvData.MOBILE_PROD_URL, "login/oauth/redirect"),
 	}
 
 	EnvData.OAUTH_SPOTIFY_CLIENT_ID = getEnvKeyOrPanic("OAUTH_SPOTIFY_CLIENT_ID")
@@ -180,7 +209,14 @@ func SetupENV(env_files ...string) {
 		ClientSecret: EnvData.OAUTH_SPOTIFY_CLIENT_SECRET,
 		Scopes:       []string{"user-read-email", "user-read-private"},
 		Endpoint:     spotify.Endpoint,
-		RedirectURL:  JoinUrlOrPanic(EnvData.FE_PROD_URL, "/login/oauth/redirect"),
+		RedirectURL:  JoinUrlOrPanic(EnvData.FE_PROD_URL, "login/oauth/redirect"),
+	}
+	EnvData.OAUTH_SPOTIFY_CONFIG_MOBILE = &oauth2.Config{
+		ClientID:     EnvData.OAUTH_SPOTIFY_CLIENT_ID,
+		ClientSecret: EnvData.OAUTH_SPOTIFY_CLIENT_SECRET,
+		Scopes:       []string{"user-read-email", "user-read-private"},
+		Endpoint:     spotify.Endpoint,
+		RedirectURL:  JoinUrlOrPanic(EnvData.MOBILE_PROD_URL, "login/oauth/redirect"),
 	}
 
 	EnvData.IMAGES_PATH = getEnvKeyOrPanic("IMAGES_PATH")

@@ -55,7 +55,7 @@ db-clean: db-remove
 gen-types:
 	$(MAKE) gen-types-clean-generated
 	openapi-generator generate \
-		-i ./api/generated/swagger.yaml \
+		-i ./api/generated/swagger/swagger.yaml \
 		-g typescript-fetch \
 		-o ./shared/fe/api-client/src/generated \
 		--skip-validate-spec \

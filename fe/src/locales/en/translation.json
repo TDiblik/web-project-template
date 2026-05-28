@@ -102,7 +102,14 @@
     "oauth": {
       "connect": "Connect",
       "connected": "Connected"
-    }
+    },
+    "avatarUpdated": "Avatar updated!",
+    "avatarUpdateError": "Failed to update avatar.",
+    "cannotRemoveLastAuthMethod": "Cannot remove your last authentication method.",
+    "disconnectError": "Failed to disconnect account.",
+    "disconnectSuccess": "Account disconnected.",
+    "profileUpdated": "Profile updated!",
+    "profileUpdateError": "Failed to update profile."
   },
   "validation": {
     "email": {

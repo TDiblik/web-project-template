@@ -36,9 +36,8 @@ type JWTInfo struct {
 	Exp           int64
 }
 
-func GenerateJWT(user models.UserModelDB) (string, error) {
+func GenerateTokens(user models.UserModelDB) (string, string, error) {
 	token_insecure := jwt.New(jwt.SigningMethodHS256)
-
 	claims := token_insecure.Claims.(jwt.MapClaims)
 	claims["sub"] = "project-template.inc"
 	claims["jti"] = uuid.New()
@@ -47,15 +46,26 @@ func GenerateJWT(user models.UserModelDB) (string, error) {
 	claims["user_first_name"] = user.FirstName
 	claims["user_last_name"] = user.LastName
 	claims["user_handle"] = user.Handle
-	if EnvData.Debug {
-		claims["exp"] = time.Now().AddDate(20, 0, 0).Unix()
-	} else {
-		claims["exp"] = time.Now().AddDate(0, 3, 0).Unix()
+
+	claims["exp"] = time.Now().Add(15 * time.Minute).Unix()
+	authToken, err := token_insecure.SignedString(EnvData.AUTH_SECRET_BYTES)
+	if err != nil {
+		return "", "", err
 	}
 
-	token, err := token_insecure.SignedString(EnvData.AUTH_SECRET_BYTES)
+	refresh_insecure := jwt.New(jwt.SigningMethodHS256)
+	refreshClaims := refresh_insecure.Claims.(jwt.MapClaims)
+	refreshClaims["sub"] = "project-template.inc.refresh"
+	refreshClaims["jti"] = uuid.New()
+	refreshClaims["user_id"] = user.Id.String()
 
-	return token, err
+	refreshClaims["exp"] = time.Now().Add(30 * 24 * time.Hour).Unix()
+	refreshToken, err := refresh_insecure.SignedString(EnvData.AUTH_SECRET_BYTES)
+	if err != nil {
+		return "", "", err
+	}
+
+	return authToken, refreshToken, nil
 }
 
 func TokenClaimsToJwtInfo(claims jwt.MapClaims) (*JWTInfo, error) {
@@ -94,6 +104,10 @@ func ValidateJWT(tokenString string) (jwt.MapClaims, error) {
 		return nil, fmt.Errorf("unable to get claims from the token")
 	}
 
+	if sub, ok := claims["sub"].(string); !ok || sub != "project-template.inc" {
+		return nil, fmt.Errorf("invalid token sub")
+	}
+
 	if exp, ok := claims["exp"].(float64); ok {
 		if time.Now().Unix() > int64(exp) {
 			return nil, fmt.Errorf("token has expired")
@@ -103,6 +117,48 @@ func ValidateJWT(tokenString string) (jwt.MapClaims, error) {
 	}
 
 	return claims, nil
+}
+
+func ValidateRefreshToken(tokenString string) (uuid.UUID, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return EnvData.AUTH_SECRET_BYTES, nil
+	})
+	if err != nil {
+		return uuid.Nil, fmt.Errorf("failed to validate token: %w", err)
+	}
+	if !token.Valid {
+		return uuid.Nil, fmt.Errorf("invalid token")
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return uuid.Nil, fmt.Errorf("unable to get claims from the token")
+	}
+
+	if sub, ok := claims["sub"].(string); !ok || sub != "project-template.inc.refresh" {
+		return uuid.Nil, fmt.Errorf("invalid token sub")
+	}
+
+	if exp, ok := claims["exp"].(float64); ok {
+		if time.Now().Unix() > int64(exp) {
+			return uuid.Nil, fmt.Errorf("token has expired")
+		}
+	} else {
+		return uuid.Nil, fmt.Errorf("token does not contain a valid 'exp' claim")
+	}
+
+	userIdStr, ok := claims["user_id"].(string)
+	if !ok {
+		return uuid.Nil, fmt.Errorf("token does not contain user_id")
+	}
+	userId, err := uuid.Parse(userIdStr)
+	if err != nil {
+		return uuid.Nil, fmt.Errorf("invalid user_id in token")
+	}
+	return userId, nil
 }
 
 func GetJWTFromLocals(c fiber.Ctx) (*JWTInfo, error) {

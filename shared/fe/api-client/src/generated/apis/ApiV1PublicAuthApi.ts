@@ -24,6 +24,11 @@ import {
     GithubComTDiblikProjectTemplateApiHandlersLoginHandlerRequestBodyToJSON,
 } from '../models/GithubComTDiblikProjectTemplateApiHandlersLoginHandlerRequestBody';
 import {
+    type GithubComTDiblikProjectTemplateApiHandlersRefreshTokenRequestBody,
+    GithubComTDiblikProjectTemplateApiHandlersRefreshTokenRequestBodyFromJSON,
+    GithubComTDiblikProjectTemplateApiHandlersRefreshTokenRequestBodyToJSON,
+} from '../models/GithubComTDiblikProjectTemplateApiHandlersRefreshTokenRequestBody';
+import {
     type GithubComTDiblikProjectTemplateApiHandlersSignUpHandlerRequestBody,
     GithubComTDiblikProjectTemplateApiHandlersSignUpHandlerRequestBodyFromJSON,
     GithubComTDiblikProjectTemplateApiHandlersSignUpHandlerRequestBodyToJSON,
@@ -36,6 +41,10 @@ import {
 
 export interface ApiV1PublicAuthLoginPostRequest {
     githubComTDiblikProjectTemplateApiHandlersLoginHandlerRequestBody?: GithubComTDiblikProjectTemplateApiHandlersLoginHandlerRequestBody;
+}
+
+export interface ApiV1PublicAuthRefreshPostRequest {
+    githubComTDiblikProjectTemplateApiHandlersRefreshTokenRequestBody?: GithubComTDiblikProjectTemplateApiHandlersRefreshTokenRequestBody;
 }
 
 export interface ApiV1PublicAuthSignupPostRequest {
@@ -86,6 +95,48 @@ export class ApiV1PublicAuthApi extends runtime.BaseAPI {
      */
     async apiV1PublicAuthLoginPost(requestParameters: ApiV1PublicAuthLoginPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GithubComTDiblikProjectTemplateApiHandlersAuthHandlerResponse> {
         const response = await this.apiV1PublicAuthLoginPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for apiV1PublicAuthRefreshPost without sending the request
+     */
+    async apiV1PublicAuthRefreshPostRequestOpts(requestParameters: ApiV1PublicAuthRefreshPostRequest): Promise<runtime.RequestOpts> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["x-user-token"] = await this.configuration.apiKey("x-user-token"); // x-user-token authentication
+        }
+
+
+        let urlPath = `/api/v1/public/auth/refresh`;
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: GithubComTDiblikProjectTemplateApiHandlersRefreshTokenRequestBodyToJSON(requestParameters['githubComTDiblikProjectTemplateApiHandlersRefreshTokenRequestBody']),
+        };
+    }
+
+    /**
+     */
+    async apiV1PublicAuthRefreshPostRaw(requestParameters: ApiV1PublicAuthRefreshPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GithubComTDiblikProjectTemplateApiHandlersAuthHandlerResponse>> {
+        const requestOptions = await this.apiV1PublicAuthRefreshPostRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GithubComTDiblikProjectTemplateApiHandlersAuthHandlerResponseFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async apiV1PublicAuthRefreshPost(requestParameters: ApiV1PublicAuthRefreshPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GithubComTDiblikProjectTemplateApiHandlersAuthHandlerResponse> {
+        const response = await this.apiV1PublicAuthRefreshPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

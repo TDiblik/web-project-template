@@ -58,3 +58,24 @@ export const SignUpFirstPageSchema = z
   });
 export type SignUpPageFormType = z.infer<typeof SignUpFirstPageSchema>;
 export type LoginOrSignUpPageFormType = LoginPageFormType | SignUpPageFormType;
+
+export const SettingsPageSchema = z
+  .object({
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+    password: PasswordSchema.optional().or(z.literal("")),
+    confirmPassword: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.password && data.password !== data.confirmPassword) {
+        return false;
+      }
+      return true;
+    },
+    {
+      path: ["confirmPassword"],
+      error: () => t("validation.confirmPassword.mismatch"),
+    },
+  );
+export type SettingsPageFormType = z.infer<typeof SettingsPageSchema>;

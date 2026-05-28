@@ -12,7 +12,6 @@ import (
 	"github.com/TDiblik/project-template/api/middleware"
 	"github.com/TDiblik/project-template/api/utils"
 	"github.com/gofiber/fiber/v3"
-	"github.com/gofiber/fiber/v3/middleware/limiter"
 	"github.com/gofiber/fiber/v3/middleware/static"
 )
 
@@ -30,13 +29,7 @@ func SetupRoutes(app *fiber.App) {
 	api_v1_public := api_v1.Group("/public")
 
 	// Auth
-	api_auth := api_v1_public.Group("/auth", limiter.New(limiter.Config{
-		Max:        25,
-		Expiration: 10 * time.Second,
-		LimitReached: func(c fiber.Ctx) error {
-			return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{"error": "Too many requests. Please try again later."})
-		},
-	}))
+	api_auth := api_v1_public.Group("/auth", middleware.RateLimit())
 	api_auth.Post("/login", &gofiberswagger.RouteInfo{
 		RequestBody: gofiberswagger.NewRequestBody[handlers.LoginHandlerRequestBody](),
 		Responses: utils.NewSwaggerResponsesWithErrors(
@@ -49,6 +42,12 @@ func SetupRoutes(app *fiber.App) {
 			gofiberswagger.NewResponseInfo[handlers.AuthHandlerResponse]("200", "ok"),
 		),
 	}, handlers.SignUpHandler)
+	api_auth.Post("/refresh", &gofiberswagger.RouteInfo{
+		RequestBody: gofiberswagger.NewRequestBody[handlers.RefreshTokenRequestBody](),
+		Responses: utils.NewSwaggerResponsesWithErrors(
+			gofiberswagger.NewResponseInfo[handlers.AuthHandlerResponse]("200", "ok"),
+		),
+	}, handlers.RefreshTokenHandler)
 
 	api_oauth := api_auth.Group("/oauth")
 	api_oauth.Get("/return", &gofiberswagger.RouteInfo{
@@ -116,6 +115,14 @@ func SetupRoutes(app *fiber.App) {
 			gofiberswagger.NewResponseInfo[handlers.PostUserMeAvatarHandlerResponse]("200", "ok"),
 		),
 	}, handlers.PostUserMeAvatarHandler)
+	api_user.Delete("/oauth/:provider", &gofiberswagger.RouteInfo{
+		Parameters: gofiberswagger.NewParameters(
+			gofiberswagger.INewPathParameter[string]("provider"),
+		),
+		Responses: utils.NewSwaggerResponsesWithErrors(
+			gofiberswagger.NewResponseInfo[handlers.DeleteUserOauthHandlerResponse]("200", "ok"),
+		),
+	}, handlers.DeleteUserOauthHandler)
 
 	if utils.EnvData.Debug {
 		gofiberswagger.Register(app, gofiberswagger.Config{
@@ -147,6 +154,7 @@ func SetupRoutes(app *fiber.App) {
 			AppendMethodToTags: false,
 			FilterOutAppUse:    true,
 		})
+		app.Use("/docs", static.New("./generated/swagger"))
 	}
 
 	cache_duration := time.Hour * 24 * 30 // 30 days

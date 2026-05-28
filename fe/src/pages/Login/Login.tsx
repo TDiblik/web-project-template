@@ -26,7 +26,7 @@ import {
 export default function Login() {
   const {t} = useTranslation();
   const navigate = useNavigate();
-  const {setToken} = useAuthTokenStore();
+  const {setTokens} = useAuthTokenStore();
   const {setLoading} = useLoadingStore();
   const [isSignUp, setIsSignUp] = useState(false);
   const [beErrorMessage, setBEErrorMessage] = useState<string | undefined>(undefined);
@@ -45,8 +45,8 @@ export default function Login() {
     setIsSignUp((prev) => !prev);
   };
 
-  const postLogin = (authToken: string) => {
-    setToken(authToken);
+  const postLogin = (authToken: string, refreshToken: string) => {
+    setTokens(authToken, refreshToken);
     navigate(routes.index);
   };
 
@@ -69,7 +69,7 @@ export default function Login() {
           username: _data.username,
         },
       })
-        .then((s) => postLogin(s.authToken))
+        .then((s) => postLogin(s.authToken, s.refreshToken))
         .catch(handleLoginErr)
         .finally(() => setLoading(false));
     } else {
@@ -80,7 +80,7 @@ export default function Login() {
           password: _data.password,
         },
       })
-        .then((s) => postLogin(s.authToken))
+        .then((s) => postLogin(s.authToken, s.refreshToken))
         .catch(handleLoginErr)
         .finally(() => setLoading(false));
     }

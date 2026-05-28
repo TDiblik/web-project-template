@@ -25,6 +25,12 @@ export interface GithubComTDiblikProjectTemplateApiHandlersAuthHandlerResponse {
      * @memberof GithubComTDiblikProjectTemplateApiHandlersAuthHandlerResponse
      */
     authToken: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof GithubComTDiblikProjectTemplateApiHandlersAuthHandlerResponse
+     */
+    refreshToken: string;
 }
 
 /**
@@ -32,6 +38,7 @@ export interface GithubComTDiblikProjectTemplateApiHandlersAuthHandlerResponse {
  */
 export function instanceOfGithubComTDiblikProjectTemplateApiHandlersAuthHandlerResponse(value: object): value is GithubComTDiblikProjectTemplateApiHandlersAuthHandlerResponse {
     if (!('authToken' in value) || value['authToken'] === undefined) return false;
+    if (!('refreshToken' in value) || value['refreshToken'] === undefined) return false;
     return true;
 }
 
@@ -46,6 +53,7 @@ export function GithubComTDiblikProjectTemplateApiHandlersAuthHandlerResponseFro
     return {
         
         'authToken': json['auth_token'],
+        'refreshToken': json['refresh_token'],
     };
 }
 
@@ -61,6 +69,7 @@ export function GithubComTDiblikProjectTemplateApiHandlersAuthHandlerResponseToJ
     return {
         
         'auth_token': value['authToken'],
+        'refresh_token': value['refreshToken'],
     };
 }
 

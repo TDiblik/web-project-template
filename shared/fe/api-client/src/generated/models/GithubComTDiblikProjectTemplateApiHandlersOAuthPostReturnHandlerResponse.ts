@@ -39,6 +39,12 @@ export interface GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandle
      * @memberof GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponse
      */
     redirectBackToAfterOauth: RedirectBackToAfterOauth;
+    /**
+     * 
+     * @type {string}
+     * @memberof GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponse
+     */
+    refreshToken: string;
 }
 
 
@@ -49,6 +55,7 @@ export interface GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandle
 export function instanceOfGithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponse(value: object): value is GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponse {
     if (!('authToken' in value) || value['authToken'] === undefined) return false;
     if (!('redirectBackToAfterOauth' in value) || value['redirectBackToAfterOauth'] === undefined) return false;
+    if (!('refreshToken' in value) || value['refreshToken'] === undefined) return false;
     return true;
 }
 
@@ -64,6 +71,7 @@ export function GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandler
         
         'authToken': json['auth_token'],
         'redirectBackToAfterOauth': RedirectBackToAfterOauthFromJSON(json['redirect_back_to_after_oauth']),
+        'refreshToken': json['refresh_token'],
     };
 }
 
@@ -80,6 +88,7 @@ export function GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandler
         
         'auth_token': value['authToken'],
         'redirect_back_to_after_oauth': RedirectBackToAfterOauthToJSON(value['redirectBackToAfterOauth']),
+        'refresh_token': value['refreshToken'],
     };
 }
 

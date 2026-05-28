@@ -14,11 +14,6 @@
 
 import * as runtime from '../runtime';
 import {
-    type ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthParameter,
-    ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthParameterFromJSON,
-    ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthParameterToJSON,
-} from '../models/ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthParameter';
-import {
     type GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponse,
     GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponseFromJSON,
     GithubComTDiblikProjectTemplateApiHandlersOauthRedirectHandlerResponseToJSON,
@@ -30,19 +25,19 @@ import {
 } from '../models/GithubComTDiblikProjectTemplateApiUtilsErrorResponseType';
 
 export interface ApiV1PublicAuthOauthRedirectFacebookGetRequest {
-    redirectBackToAfterOauth?: ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthParameter;
+    redirectBackToAfterOauth?: string;
 }
 
 export interface ApiV1PublicAuthOauthRedirectGithubGetRequest {
-    redirectBackToAfterOauth?: ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthParameter;
+    redirectBackToAfterOauth?: string;
 }
 
 export interface ApiV1PublicAuthOauthRedirectGoogleGetRequest {
-    redirectBackToAfterOauth?: ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthParameter;
+    redirectBackToAfterOauth?: string;
 }
 
 export interface ApiV1PublicAuthOauthRedirectSpotifyGetRequest {
-    redirectBackToAfterOauth?: ApiV1PublicAuthOauthRedirectFacebookGetRedirectBackToAfterOauthParameter;
+    redirectBackToAfterOauth?: string;
 }
 
 /**

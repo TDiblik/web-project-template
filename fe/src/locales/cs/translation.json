@@ -102,7 +102,14 @@
     "oauth": {
       "connect": "Připojit",
       "connected": "Připojeno"
-    }
+    },
+    "avatarUpdated": "Avatar aktualizován!",
+    "avatarUpdateError": "Nepodařilo se aktualizovat avatara.",
+    "cannotRemoveLastAuthMethod": "Nemůžete odstranit svou poslední metodu přihlášení.",
+    "disconnectError": "Nepodařilo se odpojit účet.",
+    "disconnectSuccess": "Účet odpojen.",
+    "profileUpdated": "Profil aktualizován!",
+    "profileUpdateError": "Nepodařilo se aktualizovat profil."
   },
   "validation": {
     "email": {

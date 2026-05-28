@@ -18,8 +18,8 @@
  * @export
  */
 export const PreferedTheme = {
-    Light: 'light',
-    Dark: 'dark'
+    Dark: 'dark',
+    Light: 'light'
 } as const;
 export type PreferedTheme = typeof PreferedTheme[keyof typeof PreferedTheme];
 

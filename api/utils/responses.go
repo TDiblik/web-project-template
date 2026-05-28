@@ -18,6 +18,7 @@ var DefaultErrorResponses = []gofiberswagger.ResponseInfo{
 	gofiberswagger.NewResponseInfo[ErrorResponseType]("403", "user unauthorized"),
 	gofiberswagger.NewResponseInfo[ErrorResponseType]("404", "not found"),
 	gofiberswagger.NewResponseInfo[ErrorResponseType]("409", "conflicting request"),
+	gofiberswagger.NewResponseInfo[ErrorResponseType]("429", "too many requests"),
 	gofiberswagger.NewResponseInfo[ErrorResponseType]("500", "internal server error"),
 }
 
@@ -64,6 +65,14 @@ func ConflictResponse(c fiber.Ctx, msg_reason string) error {
 
 func NotFoundResponse(c fiber.Ctx, msg_reason string) error {
 	return c.Status(404).JSON(fiber.Map{"status": "not found", "msg": msg_reason})
+}
+
+func TooManyRequestsResponse(c fiber.Ctx, e error) error {
+	Logger.Errorw("ERROR", "error", e)
+	if EnvData.Debug {
+		return c.Status(429).JSON(fiber.Map{"status": "too_many_requests", "msg": "be.error.rate_limit_exceeded", "message": "rate limit exceeded", "error_info": fmt.Sprint(e)})
+	}
+	return c.Status(429).JSON(fiber.Map{"status": "too_many_requests", "msg": "be.error.rate_limit_exceeded"})
 }
 
 func OkResponse(c fiber.Ctx, data any) error {

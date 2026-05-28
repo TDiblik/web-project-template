@@ -27,7 +27,7 @@ const OAuthRedirect = () => {
   const {refetchUser} = useLoggedUser();
   const _isAuthenticated = isAuthenticated();
 
-  const {setToken} = useAuthTokenStore();
+  const {setTokens} = useAuthTokenStore();
 
   useEffect(() => {
     if (!oAuthCode || !oAuthState || usedCodes.has(oAuthCode)) return;
@@ -39,7 +39,7 @@ const OAuthRedirect = () => {
         code: oAuthCode,
       })
       .then((s) => {
-        setToken(s.authToken);
+        setTokens(s.authToken, s.refreshToken);
         refetchUser();
         navigate(RedirectBackToAfterOauthToRouteMap[s.redirectBackToAfterOauth]);
       })

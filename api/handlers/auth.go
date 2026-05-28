@@ -18,7 +18,8 @@ type LoginHandlerRequestBody struct {
 }
 
 type AuthHandlerResponse struct {
-	AuthToken string `json:"auth_token" validate:"required"`
+	AuthToken    string `json:"auth_token" validate:"required"`
+	RefreshToken string `json:"refresh_token" validate:"required"`
 }
 
 func LoginHandler(c fiber.Ctx) error {
@@ -50,13 +51,14 @@ func LoginHandler(c fiber.Ctx) error {
 		return utils.ConflictResponse(c, "be.error.login.username_or_password_incorrect")
 	}
 
-	newAuthToken, err := GetJwtPostLogin(userUUID)
+	authToken, refreshToken, err := GetJwtPostLogin(userUUID)
 	if err != nil {
 		return utils.InternalServerErrorResponse(c, fmt.Errorf("unable to execute GetJwtPostLogin: %w", err))
 	}
 
 	return utils.OkResponse(c, AuthHandlerResponse{
-		AuthToken: newAuthToken,
+		AuthToken:    authToken,
+		RefreshToken: refreshToken,
 	})
 }
 
@@ -140,12 +142,39 @@ func SignUpHandler(c fiber.Ctx) error {
 	if err != nil {
 		return utils.InternalServerErrorResponse(c, err)
 	}
-	newAuthToken, err := GetJwtPostLogin(userUUID)
+	authToken, refreshToken, err := GetJwtPostLogin(userUUID)
 	if err != nil {
 		return utils.InternalServerErrorResponse(c, fmt.Errorf("unable to execute GetJwtPostLogin: %w", err))
 	}
 
 	return utils.OkResponse(c, AuthHandlerResponse{
-		AuthToken: newAuthToken,
+		AuthToken:    authToken,
+		RefreshToken: refreshToken,
+	})
+}
+
+type RefreshTokenRequestBody struct {
+	RefreshToken string `json:"refresh_token" validate:"required"`
+}
+
+func RefreshTokenHandler(c fiber.Ctx) error {
+	var req RefreshTokenRequestBody
+	if err := utils.GetValidRequestBody(&req, c); err != nil {
+		return utils.InvalidRequestResponse(c, err)
+	}
+
+	userId, err := utils.ValidateRefreshToken(req.RefreshToken)
+	if err != nil {
+		return utils.UnauthorizedResponse(c, fmt.Errorf("be.error.auth.invalid_refresh_token"))
+	}
+
+	authToken, refreshToken, err := GetJwtPostLogin(userId)
+	if err != nil {
+		return utils.InternalServerErrorResponse(c, fmt.Errorf("unable to execute GetJwtPostLogin: %w", err))
+	}
+
+	return utils.OkResponse(c, AuthHandlerResponse{
+		AuthToken:    authToken,
+		RefreshToken: refreshToken,
 	})
 }
