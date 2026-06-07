@@ -103,9 +103,6 @@ func AddImageExtensionIfNeeded(fileName string) string {
 func GetAvatarImageFolder() string {
 	return filepath.Join(EnvData.IMAGES_PATH, "avatar/")
 }
-func GetAvatarImagePath(fileName string) string {
-	return filepath.Join(GetAvatarImageFolder(), AddImageExtensionIfNeeded(fileName))
-}
 func GetAvatarImageUrlBase() (string, error) {
 	return url.JoinPath(EnvData.API_PROD_URL, constants.IMAGES_PATH_PREFIX_FULL, "avatar/")
 }

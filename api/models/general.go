@@ -34,23 +34,3 @@ func (ns *SQLNullString) UnmarshalJSON(data []byte) error {
 type SQLNullTime struct {
 	sql.NullTime
 }
-
-func (nt SQLNullTime) MarshalJSON() ([]byte, error) {
-	if nt.Valid {
-		return json.Marshal(nt.Time)
-	}
-	return json.Marshal(nil) // or return `[]byte("null")` for explicit `null`
-}
-func (nt *SQLNullTime) UnmarshalJSON(data []byte) error {
-	var t *time.Time
-	if err := json.Unmarshal(data, &t); err != nil {
-		return err
-	}
-	if t != nil {
-		nt.Time = *t
-		nt.Valid = true
-	} else {
-		nt.Valid = false
-	}
-	return nil
-}

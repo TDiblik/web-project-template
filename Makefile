@@ -4,7 +4,7 @@ DB_PASSWORD=s0m3C0mpl3xP4ss
 DB_IMAGE=postgres:alpine
 DB_VOLUME=$(shell pwd)/db-data
 
-.PHONY: api api-install api-build api-update api-clean db db-logs db-stop db-remove db-clean gen-types gen-types-clean gen-types-clean-generated fe fe-install fe-build fe-update fe-clean prod-build prod-publish prod-locally prod-locally-logs prod-locally-stop install update build clean
+.PHONY: api api-install api-build api-update api-clean api-cleanup db db-logs db-stop db-remove db-clean gen-types gen-types-clean gen-types-clean-generated fe fe-install fe-build fe-update fe-clean prod-build prod-publish prod-locally prod-locally-logs prod-locally-stop install update build clean
 %:
 	@:
 
@@ -25,6 +25,43 @@ api-clean:
 	@echo "Cleaning backend build artifacts..."
 	cd ./api && go clean && rm -rf ./tmp/
 
+api-cleanup:
+	@echo "Starting Aggressive Golang codebase cleanup..."
+	@echo "Installing required tools..."
+	cd ./api && go install github.com/elliot40404/go-clean-unused@latest
+	cd ./api && go install golang.org/x/tools/cmd/deadcode@latest
+	cd ./api && go install golang.org/x/tools/cmd/goimports@latest
+	@echo "Removing unused imports..."
+	cd ./api && goimports -w .
+	@echo "Removing unused local declarations..."
+	cd ./api && go-clean-unused --remove ./...
+	@echo "Scanning for empty/useless .go files..."
+	@for file in $$(find ./api -type f -name "*.go" -not -path "*/vendor/*"); do \
+		ACTUAL_CODE=$$(grep -v '^\s*//' "$$file" | grep -v '^\s*$$' | grep -v '^package '); \
+		if [ -z "$$ACTUAL_CODE" ]; then \
+			echo "Removing empty file: $$file"; \
+			rm "$$file"; \
+		fi; \
+	done
+	@echo "Finding dead code..."
+	@cd ./api && deadcode -json ./... > deadcode.json || true
+	@echo "Nuking dead functions from orbit (Bottom-Up)..."
+	@cd ./api && cat deadcode.json | jq -c '[.[].Funcs[]?] | sort_by(.Position.Line) | reverse | .[]' 2>/dev/null | while read -r item; do \
+		FILE=$$(echo $$item | jq -r '.Position.File'); \
+		LINE=$$(echo $$item | jq -r '.Position.Line'); \
+		NAME=$$(echo $$item | jq -r '.Name'); \
+		if [ ! -f "$$FILE" ]; then continue; fi; \
+		echo "Deleting $$NAME from $$FILE (Line $$LINE)..."; \
+		sed -i.bak "$${LINE},/^}/d" "$$FILE"; \
+		rm -f "$$FILE.bak"; \
+	done
+	@cd ./api && rm -f deadcode.json
+	@echo "Formatting code to clean up empty spaces..."
+	cd ./api && go fmt ./...
+	@echo "Tidying go.mod dependencies..."
+	cd ./api && go mod tidy
+	@echo "Aggressive cleanup complete. PLEASE CHECK GIT STATUS AND RUN TESTS."
+
 # ---------- Database ----------
 db:
 	@if [ $$(docker ps -a -q -f name=$(DB_NAME)) ]; then \
@@ -37,7 +74,7 @@ db:
 
 db-logs:
 	docker logs $(DB_NAME) --follow
-	
+
 db-stop:
 	@echo "Stopping database container..."
 	docker stop $(DB_NAME)
@@ -127,7 +164,7 @@ prod-locally-logs:
 	else \
 		docker logs -f $$CONTAINER_ID; \
 	fi
-	
+
 prod-locally-stop:
 	@echo "Stopping local prod container, if it exists..."
 	@docker ps -q --filter "publish=$(LOCAL_API_PROD_PORT)" | xargs -r docker stop
