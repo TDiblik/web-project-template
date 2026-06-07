@@ -4,7 +4,7 @@ DB_PASSWORD=s0m3C0mpl3xP4ss
 DB_IMAGE=postgres:alpine
 DB_VOLUME=$(shell pwd)/db-data
 
-.PHONY: api api-install api-build api-update api-clean api-cleanup db db-logs db-stop db-remove db-clean gen-types gen-types-clean gen-types-clean-generated fe fe-install fe-build fe-update fe-clean prod-build prod-publish prod-locally prod-locally-logs prod-locally-stop install update build clean
+.PHONY: api api-install api-build api-update api-clean api-cleanup db db-logs db-stop db-remove db-clean gen-types gen-types-clean gen-types-clean-generated fe fe-install fe-build fe-update fe-clean fe-cleanup prod-build prod-publish prod-locally prod-locally-logs prod-locally-stop install update build clean
 %:
 	@:
 
@@ -132,6 +132,9 @@ fe-update:
 fe-clean:
 	@echo "Cleaning frontend build..."
 	cd ./fe && rm -rf ./node_modules ./dist
+
+fe-cleanup:
+	cd ./fe && bun run knip
 
 # ---------- Docker build for production ----------
 VERSION := $(word 2,$(MAKECMDGOALS))
