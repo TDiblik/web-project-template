@@ -60,7 +60,8 @@ api-cleanup:
 	cd ./api && go fmt ./...
 	@echo "Tidying go.mod dependencies..."
 	cd ./api && go mod tidy
-	@echo "Aggressive cleanup complete. PLEASE CHECK GIT STATUS AND RUN TESTS."
+	@echo "Running staticcheck..."
+	cd ./api && go run honnef.co/go/tools/cmd/staticcheck@latest ./... || true
 
 # ---------- Database ----------
 db:
