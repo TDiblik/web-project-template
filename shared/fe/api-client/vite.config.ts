@@ -6,7 +6,7 @@ export default defineConfig({
     minify: "oxc",
     reportCompressedSize: true,
     lib: {
-      entry: path.resolve(__dirname, "src/index.ts"),
+      entry: path.resolve(import.meta.dirname, "src/index.ts"),
       name: "ApiClient",
       fileName: "index",
       formats: ["es"],

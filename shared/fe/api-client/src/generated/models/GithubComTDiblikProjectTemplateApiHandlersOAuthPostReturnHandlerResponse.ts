@@ -53,9 +53,9 @@ export interface GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandle
  * Check if a given object implements the GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponse interface.
  */
 export function instanceOfGithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponse(value: object): value is GithubComTDiblikProjectTemplateApiHandlersOAuthPostReturnHandlerResponse {
-    if (!('authToken' in value) || value['authToken'] === undefined) return false;
-    if (!('redirectBackToAfterOauth' in value) || value['redirectBackToAfterOauth'] === undefined) return false;
-    if (!('refreshToken' in value) || value['refreshToken'] === undefined) return false;
+    if ((!('authToken' in (value as Record<string, any>)) && !('auth_token' in (value as Record<string, any>))) || ((value as Record<string, any>)['authToken'] === undefined && (value as Record<string, any>)['auth_token'] === undefined)) return false;
+    if ((!('redirectBackToAfterOauth' in (value as Record<string, any>)) && !('redirect_back_to_after_oauth' in (value as Record<string, any>))) || ((value as Record<string, any>)['redirectBackToAfterOauth'] === undefined && (value as Record<string, any>)['redirect_back_to_after_oauth'] === undefined)) return false;
+    if ((!('refreshToken' in (value as Record<string, any>)) && !('refresh_token' in (value as Record<string, any>))) || ((value as Record<string, any>)['refreshToken'] === undefined && (value as Record<string, any>)['refresh_token'] === undefined)) return false;
     return true;
 }
 

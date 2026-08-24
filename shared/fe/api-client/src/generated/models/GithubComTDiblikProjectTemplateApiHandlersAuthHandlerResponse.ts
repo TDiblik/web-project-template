@@ -37,8 +37,8 @@ export interface GithubComTDiblikProjectTemplateApiHandlersAuthHandlerResponse {
  * Check if a given object implements the GithubComTDiblikProjectTemplateApiHandlersAuthHandlerResponse interface.
  */
 export function instanceOfGithubComTDiblikProjectTemplateApiHandlersAuthHandlerResponse(value: object): value is GithubComTDiblikProjectTemplateApiHandlersAuthHandlerResponse {
-    if (!('authToken' in value) || value['authToken'] === undefined) return false;
-    if (!('refreshToken' in value) || value['refreshToken'] === undefined) return false;
+    if ((!('authToken' in (value as Record<string, any>)) && !('auth_token' in (value as Record<string, any>))) || ((value as Record<string, any>)['authToken'] === undefined && (value as Record<string, any>)['auth_token'] === undefined)) return false;
+    if ((!('refreshToken' in (value as Record<string, any>)) && !('refresh_token' in (value as Record<string, any>))) || ((value as Record<string, any>)['refreshToken'] === undefined && (value as Record<string, any>)['refresh_token'] === undefined)) return false;
     return true;
 }
 

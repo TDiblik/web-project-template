@@ -33,7 +33,7 @@ export default defineConfig(() => ({
   },
   resolve: {
     alias: {
-      "@shared/api-client": path.resolve(__dirname, "../shared/fe/api-client/dist/index"),
+      "@shared/api-client": path.resolve(import.meta.dirname, "../shared/fe/api-client/dist/index"),
     },
   },
   server: {

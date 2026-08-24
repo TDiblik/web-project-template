@@ -31,7 +31,7 @@ export interface GithubComTDiblikProjectTemplateApiHandlersRefreshTokenRequestBo
  * Check if a given object implements the GithubComTDiblikProjectTemplateApiHandlersRefreshTokenRequestBody interface.
  */
 export function instanceOfGithubComTDiblikProjectTemplateApiHandlersRefreshTokenRequestBody(value: object): value is GithubComTDiblikProjectTemplateApiHandlersRefreshTokenRequestBody {
-    if (!('refreshToken' in value) || value['refreshToken'] === undefined) return false;
+    if ((!('refreshToken' in (value as Record<string, any>)) && !('refresh_token' in (value as Record<string, any>))) || ((value as Record<string, any>)['refreshToken'] === undefined && (value as Record<string, any>)['refresh_token'] === undefined)) return false;
     return true;
 }
 
